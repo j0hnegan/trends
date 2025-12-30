@@ -686,7 +686,7 @@ function Tab2({ isSelected, onClick }: { isSelected: boolean; onClick: () => voi
     <button onClick={onClick} className={`basis-0 grow min-h-px min-w-px relative rounded-[360px] shrink-0 cursor-pointer transition-all ${isSelected ? 'bg-[#343434]' : ''}`} data-name="Tab 2">
       <div className="flex flex-row items-center justify-center overflow-clip relative size-full">
         <div className="box-border content-stretch flex gap-2 items-center justify-center px-2 py-1.5 relative w-full">
-          <div className={`-webkit-box css-j5jd4p font-['Mona_Sans:Medium',_sans-serif] leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isSelected ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
+          <div className={`-webkit-box css-j5jd4p font-['Mona_Sans',_sans-serif] font-medium leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isSelected ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
             <p className="mb-0">APRIL</p>
             <p>14</p>
           </div>
@@ -701,7 +701,7 @@ function Tab4({ isSelected, onClick }: { isSelected: boolean; onClick: () => voi
     <button onClick={onClick} className={`basis-0 grow min-h-px min-w-px relative rounded-[360px] shrink-0 cursor-pointer transition-all ${isSelected ? 'bg-[#343434]' : ''}`} data-name="Tab 4">
       <div className="flex flex-row items-center justify-center overflow-clip relative size-full">
         <div className="box-border content-stretch flex gap-2 items-center justify-center px-2 py-1.5 relative w-full">
-          <div className={`-webkit-box css-j5jd4p font-['Mona_Sans:Medium',_sans-serif] leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isSelected ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
+          <div className={`-webkit-box css-j5jd4p font-['Mona_Sans',_sans-serif] font-medium leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isSelected ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
             <p className="mb-0">APRIL</p>
             <p>15</p>
           </div>
@@ -716,7 +716,7 @@ function Tab5({ isSelected, onClick }: { isSelected: boolean; onClick: () => voi
     <button onClick={onClick} className={`basis-0 grow min-h-px min-w-px relative rounded-[360px] shrink-0 cursor-pointer transition-all ${isSelected ? 'bg-[#343434]' : ''}`} data-name="Tab 5">
       <div className="flex flex-row items-center justify-center overflow-clip relative size-full">
         <div className="box-border content-stretch flex gap-2 items-center justify-center px-2 py-1.5 relative w-full">
-          <div className={`-webkit-box css-j5jd4p font-['Mona_Sans:Medium',_sans-serif] leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isSelected ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
+          <div className={`-webkit-box css-j5jd4p font-['Mona_Sans',_sans-serif] font-medium leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isSelected ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
             <p className="mb-0">APRIL</p>
             <p>16</p>
           </div>
@@ -731,7 +731,7 @@ function Tab6({ isSelected, onClick }: { isSelected: boolean; onClick: () => voi
     <button onClick={onClick} className={`basis-0 grow min-h-px min-w-px relative rounded-[360px] shrink-0 cursor-pointer transition-all ${isSelected ? 'bg-[#343434]' : ''}`} data-name="Tab 6">
       <div className="flex flex-row items-center justify-center overflow-clip relative size-full">
         <div className="box-border content-stretch flex gap-2 items-center justify-center px-2 py-1.5 relative w-full">
-          <div className={`-webkit-box css-j5jd4p font-['Mona_Sans:Medium',_sans-serif] leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isSelected ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
+          <div className={`-webkit-box css-j5jd4p font-['Mona_Sans',_sans-serif] font-medium leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isSelected ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
             <p className="mb-0">APRIL</p>
             <p>17</p>
           </div>
@@ -746,7 +746,7 @@ function Tab7({ isSelected, onClick }: { isSelected: boolean; onClick: () => voi
     <button onClick={onClick} className={`basis-0 grow min-h-px min-w-px relative rounded-[360px] shrink-0 cursor-pointer transition-all ${isSelected ? 'bg-[#343434]' : ''}`} data-name="Tab 7">
       <div className="flex flex-row items-center justify-center overflow-clip relative size-full">
         <div className="box-border content-stretch flex gap-2 items-center justify-center px-2 py-1.5 relative w-full">
-          <div className={`-webkit-box css-j5jd4p font-['Mona_Sans:Medium',_sans-serif] leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isSelected ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
+          <div className={`-webkit-box css-j5jd4p font-['Mona_Sans',_sans-serif] font-medium leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isSelected ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
             <p className="mb-0">APRIL</p>
             <p>18</p>
           </div>
@@ -761,7 +761,7 @@ function Tab8({ isSelected, onClick }: { isSelected: boolean; onClick: () => voi
     <button onClick={onClick} className={`basis-0 grow min-h-px min-w-px relative rounded-[360px] shrink-0 cursor-pointer transition-all ${isSelected ? 'bg-[#343434]' : ''}`} data-name="Tab 8">
       <div className="flex flex-row items-center justify-center overflow-clip relative size-full">
         <div className="box-border content-stretch flex gap-2 items-center justify-center px-2 py-1.5 relative w-full">
-          <div className={`-webkit-box css-j5jd4p font-['Mona_Sans:Medium',_sans-serif] leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isSelected ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
+          <div className={`-webkit-box css-j5jd4p font-['Mona_Sans',_sans-serif] font-medium leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isSelected ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
             <p className="mb-0">APRIL</p>
             <p>19</p>
           </div>
@@ -776,7 +776,7 @@ function Tab9({ isSelected, onClick }: { isSelected: boolean; onClick: () => voi
     <button onClick={onClick} className={`basis-0 grow min-h-px min-w-px relative rounded-[360px] shrink-0 cursor-pointer transition-all ${isSelected ? 'bg-[#343434]' : ''}`} data-name="Tab 9">
       <div className="flex flex-row items-center justify-center overflow-clip relative size-full">
         <div className="box-border content-stretch flex gap-2 items-center justify-center px-2 py-1.5 relative w-full">
-          <div className={`-webkit-box css-j5jd4p font-['Mona_Sans:Medium',_sans-serif] leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isSelected ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
+          <div className={`-webkit-box css-j5jd4p font-['Mona_Sans',_sans-serif] font-medium leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isSelected ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
             <p className="mb-0">APRIL</p>
             <p>20</p>
           </div>
@@ -924,66 +924,153 @@ export default function App() {
   const goalLineY = lastValidBpm !== null ? bpmToY(lastValidBpm) : null;
 
   return (
-    <div className="bg-[#171719] relative w-[390px] h-[844px] overflow-hidden" onClick={closeMenu}>
+    <div className="bg-[#171719] fixed inset-0 flex items-center justify-center" onClick={closeMenu}>
       <DevTools />
-      
-      <div className="absolute left-4 right-4 top-[22px] flex items-center justify-between">
-        <div className="flex flex-col font-['Mona_Sans:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[20px] text-nowrap">
-          <p className="leading-[1.2] whitespace-pre">Resting</p>
-        </div>
-        <CompareButton 
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleMenu();
-          }} 
-          isOpen={isMenuOpen}
-          toggleStates={toggleStates}
-          onToggleChange={handleToggleChange}
-          bpmValue={bpmValue}
-          onBpmChange={handleBpmChange}
-          hrvValue={hrvValue}
-          onHrvChange={handleHrvChange}
-        />
-      </div>
 
-      <div className="absolute left-4 top-[62px]">
-        <div className="flex items-center gap-1">
-          <div className="flex flex-col font-['Mona_Sans:SemiBold',_sans-serif] justify-center leading-[0] not-italic text-[48px] text-nowrap" style={{ color: currentData.color }}>
-            <p className="leading-[1] whitespace-pre">{currentData.bpm}</p>
+      {/* Outer wrapper - contains header + inner content */}
+      <div className="bg-[rgba(255,255,255,0.05)] rounded-[8px]" style={{ padding: '24px' }}>
+        {/* Header row - Resting and icon button */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="font-['Mona_Sans',_sans-serif] text-[#ffffff]" style={{ fontSize: '24px', fontWeight: 600 }}>
+            Resting
           </div>
-          <div className="flex flex-col font-['Mona_Sans:Medium',_sans-serif] justify-center leading-[0] not-italic text-[20px] text-[rgba(255,255,255,0.5)] text-nowrap">
-            <p className="leading-[1] whitespace-pre">BPM</p>
+          <CompareButton
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleMenu();
+            }}
+            isOpen={isMenuOpen}
+            toggleStates={toggleStates}
+            onToggleChange={handleToggleChange}
+            bpmValue={bpmValue}
+            onBpmChange={handleBpmChange}
+            hrvValue={hrvValue}
+            onHrvChange={handleHrvChange}
+          />
+        </div>
+
+        {/* Inner wrapper - contains BPM, graph, and dates */}
+        <div className="rounded-[8px] p-4 relative w-[358px]" style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.05)' }}>
+          {/* BPM display */}
+          <div className="mb-4">
+            <div className="flex items-baseline gap-1">
+              <span className="font-['Mona_Sans',_sans-serif]" style={{ fontSize: '20px', fontWeight: 600, color: currentData.color }}>
+                {currentData.bpm}
+              </span>
+              <span className="font-['Mona_Sans',_sans-serif]" style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.5)' }}>
+                BPM
+              </span>
+            </div>
+          </div>
+
+          {/* Graph area */}
+          <div className="relative h-[139px] w-full mb-4">
+            {toggleStates.sleep && <SleepFill />}
+            {toggleStates.lastWeek && <Frame2608475 />}
+
+            <div className="absolute inset-0">
+              <svg className="block size-full pointer-events-none" fill="none" preserveAspectRatio="none" viewBox="0 0 326 139">
+                <g id="Frame 2608472">
+                  <path d="M 23 97 L 70 54 L 116 79 L 163 59 L 210 17 L 256 79 L 303 64" id="Vector 97" stroke="var(--stroke-0, #B9E3F4)" strokeLinecap="round" strokeWidth="3" />
+
+                  {/* Data points - centered over each date column */}
+                  {[
+                    { date: '14', x: 16, y: 90, activeX: 14.5, activeY: 88.5 },
+                    { date: '15', x: 63, y: 47, activeX: 61.5, activeY: 45.5 },
+                    { date: '16', x: 109, y: 72, activeX: 107.5, activeY: 70.5 },
+                    { date: '17', x: 156, y: 52, activeX: 154.5, activeY: 50.5 },
+                    { date: '18', x: 203, y: 10, activeX: 201.5, activeY: 8.5 },
+                    { date: '19', x: 249, y: 72, activeX: 247.5, activeY: 70.5 },
+                    { date: '20', x: 296, y: 57, activeX: 294.5, activeY: 55.5 },
+                  ].map((point) => {
+                    const isActive = hoveredDate ? hoveredDate === point.date : point.date === '20';
+                    return (
+                      <g key={point.date}>
+                        <rect
+                          fill="transparent"
+                          height="24"
+                          width="24"
+                          x={point.x - 7}
+                          y={point.y - 5}
+                          className="cursor-pointer pointer-events-auto"
+                          onMouseEnter={() => handleHover(point.date)}
+                          onMouseLeave={() => handleHover(null)}
+                        />
+                        <rect
+                          fill="var(--fill-0, #B9E3F4)"
+                          height={isActive ? 17 : 14}
+                          rx={isActive ? 8.5 : 7}
+                          width={isActive ? 17 : 14}
+                          x={isActive ? point.activeX : point.x}
+                          y={isActive ? point.activeY : point.y}
+                          className="cursor-pointer transition-all"
+                          style={{ pointerEvents: 'none' }}
+                        />
+                        {isActive && (
+                          <rect
+                            height="17"
+                            rx="8.5"
+                            stroke="var(--stroke-0, #E5F4FB)"
+                            strokeWidth="3"
+                            width="17"
+                            x={point.activeX}
+                            y={point.activeY}
+                            fill="none"
+                            style={{ pointerEvents: 'none' }}
+                          />
+                        )}
+                      </g>
+                    );
+                  })}
+                </g>
+              </svg>
+            </div>
+
+            {toggleStates.goals && goalLineY !== null && (
+              <div
+                className={`absolute left-0 w-full h-[2px] z-20 transition-opacity duration-500 ${goalLineAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
+                style={{
+                  top: `${goalLineY}px`,
+                }}
+              >
+                <svg width="100%" height="2" className="block">
+                  <line
+                    x1="0"
+                    y1="1"
+                    x2="100%"
+                    y2="1"
+                    stroke="#FF6B6B"
+                    strokeWidth="2"
+                    strokeDasharray="5,5"
+                  />
+                </svg>
+              </div>
+            )}
+          </div>
+
+          {/* Date tabs */}
+          <div className="w-full">
+            <div className="box-border content-stretch flex flex-row gap-1 items-stretch justify-start p-1 relative w-full">
+              {['14', '15', '16', '17', '18', '19', '20'].map((date) => (
+                <button
+                  key={date}
+                  onClick={() => handleTabClick(date)}
+                  className="basis-0 grow min-h-px min-w-px relative shrink-0 cursor-pointer"
+                >
+                  <div className="flex flex-row items-center justify-center overflow-clip relative size-full">
+                    <div className="box-border content-stretch flex gap-2 items-center justify-center px-2 py-1.5 relative w-full">
+                      <div className={`-webkit-box css-j5jd4p font-['Mona_Sans',_sans-serif] font-medium leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${selectedTab === date ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
+                        <p className="mb-0">APRIL</p>
+                        <p>{date}</p>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-
-      {toggleStates.sleep && <SleepFill />}
-      {toggleStates.lastWeek && <Frame2608475 />}
-      
-      <Frame2608472 onHover={handleHover} hoveredDate={hoveredDate} />
-
-      {toggleStates.goals && goalLineY !== null && (
-        <div 
-          className={`absolute left-4 w-[350px] h-[2px] z-20 transition-opacity duration-500 ${goalLineAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
-          style={{ 
-            top: `${103 + goalLineY}px`,
-          }}
-        >
-          <svg width="350" height="2" className="block">
-            <line 
-              x1="0" 
-              y1="1" 
-              x2="350" 
-              y2="1" 
-              stroke="#FF6B6B" 
-              strokeWidth="2" 
-              strokeDasharray="5,5"
-            />
-          </svg>
-        </div>
-      )}
-
-      <Frame2608462 selectedTab={selectedTab} onTabClick={handleTabClick} />
     </div>
   );
 }
