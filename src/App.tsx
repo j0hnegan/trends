@@ -924,10 +924,10 @@ export default function App() {
   const goalLineY = lastValidBpm !== null ? bpmToY(lastValidBpm) : null;
 
   return (
-    <div className="bg-[#171719] min-h-screen w-full flex items-center justify-center" onClick={closeMenu}>
+    <>
       <DevTools />
-
-      <div className="relative w-[390px] h-[340px] bg-[#28282a] rounded-[16px] border border-[rgba(255,255,255,0.1)] overflow-hidden">
+      <div className="bg-[#171719] min-h-screen w-full flex items-center justify-center" onClick={closeMenu}>
+        <div className="relative w-[390px] h-[340px] bg-[#28282a] rounded-[16px] border border-[rgba(255,255,255,0.1)] z-10">
         <div className="absolute left-4 right-4 top-[22px] flex items-center justify-between">
           <div className="flex flex-col font-['Mona_Sans:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[20px] text-nowrap">
             <p className="leading-[1.2] whitespace-pre">Resting</p>
@@ -985,7 +985,8 @@ export default function App() {
         )}
 
         <Frame2608462 selectedTab={selectedTab} onTabClick={handleTabClick} />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
