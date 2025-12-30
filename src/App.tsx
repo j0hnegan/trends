@@ -928,7 +928,7 @@ export default function App() {
       <DevTools />
 
       {/* Outer wrapper - contains header + inner content */}
-      <div className="bg-[rgba(255,255,255,0.05)] rounded-[8px] p-4">
+      <div className="bg-[rgba(255,255,255,0.05)] rounded-[8px] p-6">
         {/* Header row - Resting and icon button */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex flex-col font-['Mona_Sans',_sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[20px] text-nowrap">
@@ -970,18 +970,7 @@ export default function App() {
 
             <div className="absolute inset-0">
               <svg className="block size-full pointer-events-none" fill="none" preserveAspectRatio="none" viewBox="0 0 350 139">
-                <defs>
-                  <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#B9E3F4" stopOpacity="0.5" />
-                    <stop offset="100%" stopColor="#B9E3F4" stopOpacity="0.1" />
-                  </linearGradient>
-                </defs>
                 <g id="Frame 2608472">
-                  <path
-                    d="M 11 97 L 71.8061 54.2327 L 123.399 78.8868 L 171.307 59.2641 L 227.814 17 L 278.179 78.8868 L 331 64.2956 L 333 64.2956 L 333 137 A 2 2 0 0 1 331 139 L 13 139 A 2 2 0 0 1 11 137 Z"
-                    fill="url(#areaGradient)"
-                  />
-
                   <path d="M 11 97 L 71.8061 54.2327 L 123.399 78.8868 L 171.307 59.2641 L 227.814 17 L 278.179 78.8868 L 331 64.2956" id="Vector 97" stroke="var(--stroke-0, #B9E3F4)" strokeLinecap="round" strokeWidth="3" />
 
                   {/* Data points */}
@@ -1060,7 +1049,7 @@ export default function App() {
           </div>
 
           {/* Date tabs */}
-          <div className="bg-[#1f1f21] rounded-[12px] w-full">
+          <div className="w-full">
             <div className="box-border content-stretch flex flex-row gap-1 items-stretch justify-start p-1 relative w-full">
               {['14', '15', '16', '17', '18', '19', '20'].map((date) => (
                 <button
