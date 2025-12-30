@@ -924,66 +924,68 @@ export default function App() {
   const goalLineY = lastValidBpm !== null ? bpmToY(lastValidBpm) : null;
 
   return (
-    <div className="bg-[#171719] relative w-[390px] h-[844px] overflow-hidden" onClick={closeMenu}>
+    <div className="bg-[#171719] min-h-screen w-full flex items-center justify-center" onClick={closeMenu}>
       <DevTools />
-      
-      <div className="absolute left-4 right-4 top-[22px] flex items-center justify-between">
-        <div className="flex flex-col font-['Mona_Sans:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[20px] text-nowrap">
-          <p className="leading-[1.2] whitespace-pre">Resting</p>
-        </div>
-        <CompareButton 
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleMenu();
-          }} 
-          isOpen={isMenuOpen}
-          toggleStates={toggleStates}
-          onToggleChange={handleToggleChange}
-          bpmValue={bpmValue}
-          onBpmChange={handleBpmChange}
-          hrvValue={hrvValue}
-          onHrvChange={handleHrvChange}
-        />
-      </div>
 
-      <div className="absolute left-4 top-[62px]">
-        <div className="flex items-center gap-1">
-          <div className="flex flex-col font-['Mona_Sans:SemiBold',_sans-serif] justify-center leading-[0] not-italic text-[48px] text-nowrap" style={{ color: currentData.color }}>
-            <p className="leading-[1] whitespace-pre">{currentData.bpm}</p>
+      <div className="relative w-[390px] h-[340px] bg-[#28282a] rounded-[16px] border border-[rgba(255,255,255,0.1)] overflow-hidden">
+        <div className="absolute left-4 right-4 top-[22px] flex items-center justify-between">
+          <div className="flex flex-col font-['Mona_Sans:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[20px] text-nowrap">
+            <p className="leading-[1.2] whitespace-pre">Resting</p>
           </div>
-          <div className="flex flex-col font-['Mona_Sans:Medium',_sans-serif] justify-center leading-[0] not-italic text-[20px] text-[rgba(255,255,255,0.5)] text-nowrap">
-            <p className="leading-[1] whitespace-pre">BPM</p>
+          <CompareButton
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleMenu();
+            }}
+            isOpen={isMenuOpen}
+            toggleStates={toggleStates}
+            onToggleChange={handleToggleChange}
+            bpmValue={bpmValue}
+            onBpmChange={handleBpmChange}
+            hrvValue={hrvValue}
+            onHrvChange={handleHrvChange}
+          />
+        </div>
+
+        <div className="absolute left-4 top-[62px]">
+          <div className="flex items-center gap-1">
+            <div className="flex flex-col font-['Mona_Sans:SemiBold',_sans-serif] justify-center leading-[0] not-italic text-[48px] text-nowrap" style={{ color: currentData.color }}>
+              <p className="leading-[1] whitespace-pre">{currentData.bpm}</p>
+            </div>
+            <div className="flex flex-col font-['Mona_Sans:Medium',_sans-serif] justify-center leading-[0] not-italic text-[20px] text-[rgba(255,255,255,0.5)] text-nowrap">
+              <p className="leading-[1] whitespace-pre">BPM</p>
+            </div>
           </div>
         </div>
+
+        {toggleStates.sleep && <SleepFill />}
+        {toggleStates.lastWeek && <Frame2608475 />}
+
+        <Frame2608472 onHover={handleHover} hoveredDate={hoveredDate} />
+
+        {toggleStates.goals && goalLineY !== null && (
+          <div
+            className={`absolute left-4 w-[350px] h-[2px] z-20 transition-opacity duration-500 ${goalLineAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
+            style={{
+              top: `${103 + goalLineY}px`,
+            }}
+          >
+            <svg width="350" height="2" className="block">
+              <line
+                x1="0"
+                y1="1"
+                x2="350"
+                y2="1"
+                stroke="#FF6B6B"
+                strokeWidth="2"
+                strokeDasharray="5,5"
+              />
+            </svg>
+          </div>
+        )}
+
+        <Frame2608462 selectedTab={selectedTab} onTabClick={handleTabClick} />
       </div>
-
-      {toggleStates.sleep && <SleepFill />}
-      {toggleStates.lastWeek && <Frame2608475 />}
-      
-      <Frame2608472 onHover={handleHover} hoveredDate={hoveredDate} />
-
-      {toggleStates.goals && goalLineY !== null && (
-        <div 
-          className={`absolute left-4 w-[350px] h-[2px] z-20 transition-opacity duration-500 ${goalLineAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
-          style={{ 
-            top: `${103 + goalLineY}px`,
-          }}
-        >
-          <svg width="350" height="2" className="block">
-            <line 
-              x1="0" 
-              y1="1" 
-              x2="350" 
-              y2="1" 
-              stroke="#FF6B6B" 
-              strokeWidth="2" 
-              strokeDasharray="5,5"
-            />
-          </svg>
-        </div>
-      )}
-
-      <Frame2608462 selectedTab={selectedTab} onTabClick={handleTabClick} />
     </div>
   );
 }
