@@ -931,7 +931,7 @@ export default function App() {
       <div className="bg-[rgba(255,255,255,0.05)] rounded-[8px]" style={{ padding: '24px' }}>
         {/* Header row - Resting and icon button */}
         <div className="flex items-center justify-between mb-4">
-          <div className="flex flex-col font-['Mona_Sans',_sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[20px] text-nowrap">
+          <div className="flex flex-col font-['Mona_Sans',_sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[24px] text-nowrap">
             <p className="leading-[1.2] whitespace-pre">Resting</p>
           </div>
           <CompareButton
@@ -954,10 +954,10 @@ export default function App() {
           {/* BPM display */}
           <div className="mb-4">
             <div className="flex items-center gap-1">
-              <div className="flex flex-col font-['Mona_Sans',_sans-serif] font-semibold justify-center leading-[0] not-italic text-[48px] text-nowrap" style={{ color: currentData.color }}>
+              <div className="flex flex-col font-['Mona_Sans',_sans-serif] font-semibold justify-center leading-[0] not-italic text-[20px] text-nowrap" style={{ color: currentData.color }}>
                 <p className="leading-[1] whitespace-pre">{currentData.bpm}</p>
               </div>
-              <div className="flex flex-col font-['Mona_Sans',_sans-serif] font-medium justify-center leading-[0] not-italic text-[20px] text-[rgba(255,255,255,0.5)] text-nowrap">
+              <div className="flex flex-col font-['Mona_Sans',_sans-serif] font-medium justify-center leading-[0] not-italic text-[14px] text-[rgba(255,255,255,0.5)] text-nowrap">
                 <p className="leading-[1] whitespace-pre">BPM</p>
               </div>
             </div>
@@ -971,17 +971,17 @@ export default function App() {
             <div className="absolute inset-0">
               <svg className="block size-full pointer-events-none" fill="none" preserveAspectRatio="none" viewBox="0 0 350 139">
                 <g id="Frame 2608472">
-                  <path d="M 11 97 L 71.8061 54.2327 L 123.399 78.8868 L 171.307 59.2641 L 227.814 17 L 278.179 78.8868 L 331 64.2956" id="Vector 97" stroke="var(--stroke-0, #B9E3F4)" strokeLinecap="round" strokeWidth="3" />
+                  <path d="M 25 97 L 75 54 L 125 79 L 175 59 L 225 17 L 275 79 L 325 64" id="Vector 97" stroke="var(--stroke-0, #B9E3F4)" strokeLinecap="round" strokeWidth="3" />
 
                   {/* Data points */}
                   {[
-                    { date: '14', x: 7, y: 90, activeX: 5.5, activeY: 88.5 },
-                    { date: '15', x: 64.8061, y: 47.2327, activeX: 63.3061, activeY: 45.7327 },
-                    { date: '16', x: 116.399, y: 71.8868, activeX: 114.899, activeY: 70.3868 },
-                    { date: '17', x: 164.307, y: 52.2641, activeX: 162.807, activeY: 50.7641 },
-                    { date: '18', x: 220.814, y: 10, activeX: 219.314, activeY: 8.5 },
-                    { date: '19', x: 271.179, y: 71.8868, activeX: 269.679, activeY: 70.3868 },
-                    { date: '20', x: 324, y: 57.2956, activeX: 322.5, activeY: 55.7956 },
+                    { date: '14', x: 18, y: 90, activeX: 16.5, activeY: 88.5 },
+                    { date: '15', x: 68, y: 47, activeX: 66.5, activeY: 45.5 },
+                    { date: '16', x: 118, y: 72, activeX: 116.5, activeY: 70.5 },
+                    { date: '17', x: 168, y: 52, activeX: 166.5, activeY: 50.5 },
+                    { date: '18', x: 218, y: 10, activeX: 216.5, activeY: 8.5 },
+                    { date: '19', x: 268, y: 72, activeX: 266.5, activeY: 70.5 },
+                    { date: '20', x: 318, y: 57, activeX: 316.5, activeY: 55.5 },
                   ].map((point) => {
                     const isActive = hoveredDate ? hoveredDate === point.date : point.date === '20';
                     return (
@@ -1055,7 +1055,7 @@ export default function App() {
                 <button
                   key={date}
                   onClick={() => handleTabClick(date)}
-                  className={`basis-0 grow min-h-px min-w-px relative rounded-[360px] shrink-0 cursor-pointer transition-all ${selectedTab === date ? 'bg-[#343434]' : ''}`}
+                  className="basis-0 grow min-h-px min-w-px relative shrink-0 cursor-pointer"
                 >
                   <div className="flex flex-row items-center justify-center overflow-clip relative size-full">
                     <div className="box-border content-stretch flex gap-2 items-center justify-center px-2 py-1.5 relative w-full">
