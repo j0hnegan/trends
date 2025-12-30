@@ -924,66 +924,164 @@ export default function App() {
   const goalLineY = lastValidBpm !== null ? bpmToY(lastValidBpm) : null;
 
   return (
-    <div className="bg-[#171719] relative w-[390px] h-[844px] overflow-hidden" onClick={closeMenu}>
+    <div className="bg-[#171719] relative w-[390px] h-[844px] overflow-hidden flex items-center justify-center" onClick={closeMenu}>
       <DevTools />
-      
-      <div className="absolute left-4 right-4 top-[22px] flex items-center justify-between">
-        <div className="flex flex-col font-['Mona_Sans:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[20px] text-nowrap">
-          <p className="leading-[1.2] whitespace-pre">Resting</p>
-        </div>
-        <CompareButton 
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleMenu();
-          }} 
-          isOpen={isMenuOpen}
-          toggleStates={toggleStates}
-          onToggleChange={handleToggleChange}
-          bpmValue={bpmValue}
-          onBpmChange={handleBpmChange}
-          hrvValue={hrvValue}
-          onHrvChange={handleHrvChange}
-        />
-      </div>
 
-      <div className="absolute left-4 top-[62px]">
-        <div className="flex items-center gap-1">
-          <div className="flex flex-col font-['Mona_Sans:SemiBold',_sans-serif] justify-center leading-[0] not-italic text-[48px] text-nowrap" style={{ color: currentData.color }}>
-            <p className="leading-[1] whitespace-pre">{currentData.bpm}</p>
+      {/* Outer wrapper - contains header + inner content */}
+      <div className="bg-[rgba(255,255,255,0.05)] rounded-[8px] p-4">
+        {/* Header row - Resting and icon button */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col font-['Mona_Sans:SemiBold',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[20px] text-nowrap">
+            <p className="leading-[1.2] whitespace-pre">Resting</p>
           </div>
-          <div className="flex flex-col font-['Mona_Sans:Medium',_sans-serif] justify-center leading-[0] not-italic text-[20px] text-[rgba(255,255,255,0.5)] text-nowrap">
-            <p className="leading-[1] whitespace-pre">BPM</p>
+          <CompareButton
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleMenu();
+            }}
+            isOpen={isMenuOpen}
+            toggleStates={toggleStates}
+            onToggleChange={handleToggleChange}
+            bpmValue={bpmValue}
+            onBpmChange={handleBpmChange}
+            hrvValue={hrvValue}
+            onHrvChange={handleHrvChange}
+          />
+        </div>
+
+        {/* Inner wrapper - contains BPM, graph, and dates */}
+        <div className="bg-[rgba(255,255,255,0.04)] rounded-[8px] border border-[rgba(255,255,255,0.05)] p-4 relative w-[358px]">
+          {/* BPM display */}
+          <div className="mb-4">
+            <div className="flex items-center gap-1">
+              <div className="flex flex-col font-['Mona_Sans:SemiBold',_sans-serif] justify-center leading-[0] not-italic text-[48px] text-nowrap" style={{ color: currentData.color }}>
+                <p className="leading-[1] whitespace-pre">{currentData.bpm}</p>
+              </div>
+              <div className="flex flex-col font-['Mona_Sans:Medium',_sans-serif] justify-center leading-[0] not-italic text-[20px] text-[rgba(255,255,255,0.5)] text-nowrap">
+                <p className="leading-[1] whitespace-pre">BPM</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Graph area */}
+          <div className="relative h-[139px] w-[350px] mb-4">
+            {toggleStates.sleep && <SleepFill />}
+            {toggleStates.lastWeek && <Frame2608475 />}
+
+            <div className="absolute inset-0">
+              <svg className="block size-full pointer-events-none" fill="none" preserveAspectRatio="none" viewBox="0 0 350 139">
+                <defs>
+                  <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#B9E3F4" stopOpacity="0.5" />
+                    <stop offset="100%" stopColor="#B9E3F4" stopOpacity="0.1" />
+                  </linearGradient>
+                </defs>
+                <g id="Frame 2608472">
+                  <path
+                    d="M 11 97 L 71.8061 54.2327 L 123.399 78.8868 L 171.307 59.2641 L 227.814 17 L 278.179 78.8868 L 331 64.2956 L 333 64.2956 L 333 137 A 2 2 0 0 1 331 139 L 13 139 A 2 2 0 0 1 11 137 Z"
+                    fill="url(#areaGradient)"
+                  />
+
+                  <path d="M 11 97 L 71.8061 54.2327 L 123.399 78.8868 L 171.307 59.2641 L 227.814 17 L 278.179 78.8868 L 331 64.2956" id="Vector 97" stroke="var(--stroke-0, #B9E3F4)" strokeLinecap="round" strokeWidth="3" />
+
+                  {/* Data points */}
+                  {[
+                    { date: '14', x: 7, y: 90, activeX: 5.5, activeY: 88.5 },
+                    { date: '15', x: 64.8061, y: 47.2327, activeX: 63.3061, activeY: 45.7327 },
+                    { date: '16', x: 116.399, y: 71.8868, activeX: 114.899, activeY: 70.3868 },
+                    { date: '17', x: 164.307, y: 52.2641, activeX: 162.807, activeY: 50.7641 },
+                    { date: '18', x: 220.814, y: 10, activeX: 219.314, activeY: 8.5 },
+                    { date: '19', x: 271.179, y: 71.8868, activeX: 269.679, activeY: 70.3868 },
+                    { date: '20', x: 324, y: 57.2956, activeX: 322.5, activeY: 55.7956 },
+                  ].map((point) => {
+                    const isActive = hoveredDate ? hoveredDate === point.date : point.date === '20';
+                    return (
+                      <g key={point.date}>
+                        <rect
+                          fill="transparent"
+                          height="24"
+                          width="24"
+                          x={point.x - 7}
+                          y={point.y - 5}
+                          className="cursor-pointer pointer-events-auto"
+                          onMouseEnter={() => handleHover(point.date)}
+                          onMouseLeave={() => handleHover(null)}
+                        />
+                        <rect
+                          fill="var(--fill-0, #B9E3F4)"
+                          height={isActive ? 17 : 14}
+                          rx={isActive ? 8.5 : 7}
+                          width={isActive ? 17 : 14}
+                          x={isActive ? point.activeX : point.x}
+                          y={isActive ? point.activeY : point.y}
+                          className="cursor-pointer transition-all"
+                          style={{ pointerEvents: 'none' }}
+                        />
+                        {isActive && (
+                          <rect
+                            height="17"
+                            rx="8.5"
+                            stroke="var(--stroke-0, #E5F4FB)"
+                            strokeWidth="3"
+                            width="17"
+                            x={point.activeX}
+                            y={point.activeY}
+                            fill="none"
+                            style={{ pointerEvents: 'none' }}
+                          />
+                        )}
+                      </g>
+                    );
+                  })}
+                </g>
+              </svg>
+            </div>
+
+            {toggleStates.goals && goalLineY !== null && (
+              <div
+                className={`absolute left-0 w-[350px] h-[2px] z-20 transition-opacity duration-500 ${goalLineAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
+                style={{
+                  top: `${goalLineY}px`,
+                }}
+              >
+                <svg width="350" height="2" className="block">
+                  <line
+                    x1="0"
+                    y1="1"
+                    x2="350"
+                    y2="1"
+                    stroke="#FF6B6B"
+                    strokeWidth="2"
+                    strokeDasharray="5,5"
+                  />
+                </svg>
+              </div>
+            )}
+          </div>
+
+          {/* Date tabs */}
+          <div className="bg-[#1f1f21] rounded-[12px] w-full">
+            <div className="box-border content-stretch flex flex-row gap-1 items-stretch justify-start p-1 relative w-full">
+              {['14', '15', '16', '17', '18', '19', '20'].map((date) => (
+                <button
+                  key={date}
+                  onClick={() => handleTabClick(date)}
+                  className={`basis-0 grow min-h-px min-w-px relative rounded-[360px] shrink-0 cursor-pointer transition-all ${selectedTab === date ? 'bg-[#343434]' : ''}`}
+                >
+                  <div className="flex flex-row items-center justify-center overflow-clip relative size-full">
+                    <div className="box-border content-stretch flex gap-2 items-center justify-center px-2 py-1.5 relative w-full">
+                      <div className={`-webkit-box css-j5jd4p font-['Mona_Sans:Medium',_sans-serif] leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${selectedTab === date ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
+                        <p className="mb-0">APRIL</p>
+                        <p>{date}</p>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-
-      {toggleStates.sleep && <SleepFill />}
-      {toggleStates.lastWeek && <Frame2608475 />}
-      
-      <Frame2608472 onHover={handleHover} hoveredDate={hoveredDate} />
-
-      {toggleStates.goals && goalLineY !== null && (
-        <div 
-          className={`absolute left-4 w-[350px] h-[2px] z-20 transition-opacity duration-500 ${goalLineAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
-          style={{ 
-            top: `${103 + goalLineY}px`,
-          }}
-        >
-          <svg width="350" height="2" className="block">
-            <line 
-              x1="0" 
-              y1="1" 
-              x2="350" 
-              y2="1" 
-              stroke="#FF6B6B" 
-              strokeWidth="2" 
-              strokeDasharray="5,5"
-            />
-          </svg>
-        </div>
-      )}
-
-      <Frame2608462 selectedTab={selectedTab} onTabClick={handleTabClick} />
     </div>
   );
 }
