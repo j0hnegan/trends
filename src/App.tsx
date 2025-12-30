@@ -931,8 +931,8 @@ export default function App() {
       <div className="bg-[rgba(255,255,255,0.05)] rounded-[8px]" style={{ padding: '24px' }}>
         {/* Header row - Resting and icon button */}
         <div className="flex items-center justify-between mb-4">
-          <div className="flex flex-col font-['Mona_Sans',_sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[24px] text-nowrap">
-            <p className="leading-[1.2] whitespace-pre">Resting</p>
+          <div className="font-['Mona_Sans',_sans-serif] text-[#ffffff]" style={{ fontSize: '24px', fontWeight: 600 }}>
+            Resting
           </div>
           <CompareButton
             onClick={(e) => {
@@ -953,35 +953,35 @@ export default function App() {
         <div className="rounded-[8px] p-4 relative w-[358px]" style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.05)' }}>
           {/* BPM display */}
           <div className="mb-4">
-            <div className="flex items-center gap-1">
-              <div className="flex flex-col font-['Mona_Sans',_sans-serif] font-semibold justify-center leading-[0] not-italic text-[20px] text-nowrap" style={{ color: currentData.color }}>
-                <p className="leading-[1] whitespace-pre">{currentData.bpm}</p>
-              </div>
-              <div className="flex flex-col font-['Mona_Sans',_sans-serif] font-medium justify-center leading-[0] not-italic text-[14px] text-[rgba(255,255,255,0.5)] text-nowrap">
-                <p className="leading-[1] whitespace-pre">BPM</p>
-              </div>
+            <div className="flex items-baseline gap-1">
+              <span className="font-['Mona_Sans',_sans-serif]" style={{ fontSize: '20px', fontWeight: 600, color: currentData.color }}>
+                {currentData.bpm}
+              </span>
+              <span className="font-['Mona_Sans',_sans-serif]" style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.5)' }}>
+                BPM
+              </span>
             </div>
           </div>
 
           {/* Graph area */}
-          <div className="relative h-[139px] w-[350px] mb-4">
+          <div className="relative h-[139px] w-full mb-4">
             {toggleStates.sleep && <SleepFill />}
             {toggleStates.lastWeek && <Frame2608475 />}
 
             <div className="absolute inset-0">
-              <svg className="block size-full pointer-events-none" fill="none" preserveAspectRatio="none" viewBox="0 0 350 139">
+              <svg className="block size-full pointer-events-none" fill="none" preserveAspectRatio="none" viewBox="0 0 326 139">
                 <g id="Frame 2608472">
-                  <path d="M 25 97 L 75 54 L 125 79 L 175 59 L 225 17 L 275 79 L 325 64" id="Vector 97" stroke="var(--stroke-0, #B9E3F4)" strokeLinecap="round" strokeWidth="3" />
+                  <path d="M 23 97 L 70 54 L 116 79 L 163 59 L 210 17 L 256 79 L 303 64" id="Vector 97" stroke="var(--stroke-0, #B9E3F4)" strokeLinecap="round" strokeWidth="3" />
 
-                  {/* Data points */}
+                  {/* Data points - centered over each date column */}
                   {[
-                    { date: '14', x: 18, y: 90, activeX: 16.5, activeY: 88.5 },
-                    { date: '15', x: 68, y: 47, activeX: 66.5, activeY: 45.5 },
-                    { date: '16', x: 118, y: 72, activeX: 116.5, activeY: 70.5 },
-                    { date: '17', x: 168, y: 52, activeX: 166.5, activeY: 50.5 },
-                    { date: '18', x: 218, y: 10, activeX: 216.5, activeY: 8.5 },
-                    { date: '19', x: 268, y: 72, activeX: 266.5, activeY: 70.5 },
-                    { date: '20', x: 318, y: 57, activeX: 316.5, activeY: 55.5 },
+                    { date: '14', x: 16, y: 90, activeX: 14.5, activeY: 88.5 },
+                    { date: '15', x: 63, y: 47, activeX: 61.5, activeY: 45.5 },
+                    { date: '16', x: 109, y: 72, activeX: 107.5, activeY: 70.5 },
+                    { date: '17', x: 156, y: 52, activeX: 154.5, activeY: 50.5 },
+                    { date: '18', x: 203, y: 10, activeX: 201.5, activeY: 8.5 },
+                    { date: '19', x: 249, y: 72, activeX: 247.5, activeY: 70.5 },
+                    { date: '20', x: 296, y: 57, activeX: 294.5, activeY: 55.5 },
                   ].map((point) => {
                     const isActive = hoveredDate ? hoveredDate === point.date : point.date === '20';
                     return (
@@ -1028,16 +1028,16 @@ export default function App() {
 
             {toggleStates.goals && goalLineY !== null && (
               <div
-                className={`absolute left-0 w-[350px] h-[2px] z-20 transition-opacity duration-500 ${goalLineAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
+                className={`absolute left-0 w-full h-[2px] z-20 transition-opacity duration-500 ${goalLineAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
                 style={{
                   top: `${goalLineY}px`,
                 }}
               >
-                <svg width="350" height="2" className="block">
+                <svg width="100%" height="2" className="block">
                   <line
                     x1="0"
                     y1="1"
-                    x2="350"
+                    x2="100%"
                     y2="1"
                     stroke="#FF6B6B"
                     strokeWidth="2"
