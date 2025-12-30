@@ -924,7 +924,7 @@ export default function App() {
   const goalLineY = lastValidBpm !== null ? bpmToY(lastValidBpm) : null;
 
   return (
-    <div className="bg-[#171719] relative w-screen h-screen overflow-hidden flex items-center justify-center" onClick={closeMenu}>
+    <div className="bg-[#171719] min-h-screen w-full flex items-center justify-center" onClick={closeMenu}>
       <DevTools />
 
       {/* Outer wrapper - contains header + inner content */}
