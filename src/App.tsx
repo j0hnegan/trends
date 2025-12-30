@@ -928,7 +928,7 @@ export default function App() {
       <DevTools />
 
       {/* Outer wrapper - contains header + inner content */}
-      <div className="bg-[rgba(255,255,255,0.05)] rounded-[8px] p-6">
+      <div className="bg-[rgba(255,255,255,0.05)] rounded-[8px]" style={{ padding: '24px' }}>
         {/* Header row - Resting and icon button */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex flex-col font-['Mona_Sans',_sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[20px] text-nowrap">
@@ -950,7 +950,7 @@ export default function App() {
         </div>
 
         {/* Inner wrapper - contains BPM, graph, and dates */}
-        <div className="bg-[rgba(255,255,255,0.04)] rounded-[8px] border border-[rgba(255,255,255,0.05)] p-4 relative w-[358px]">
+        <div className="rounded-[8px] p-4 relative w-[358px]" style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.05)' }}>
           {/* BPM display */}
           <div className="mb-4">
             <div className="flex items-center gap-1">
