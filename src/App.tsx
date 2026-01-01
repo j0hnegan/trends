@@ -73,7 +73,8 @@ function ToggleSwitch({ checked, onCheckedChange, disabled = false }: { checked:
   const [displayedChecked, setDisplayedChecked] = useState(checked);
   const colorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (disabled) return;
     
     const newChecked = !checked;
@@ -142,7 +143,7 @@ function ToggleSwitch({ checked, onCheckedChange, disabled = false }: { checked:
 function CompareButton({ onClick, isOpen, toggleStates, onToggleChange, bpmValue, onBpmChange, hrvValue, onHrvChange }: { 
   onClick: () => void; 
   isOpen: boolean;
-  toggleStates: { goals: boolean; lastWeek: boolean; sleep: boolean }; 
+  toggleStates: { lastWeek: boolean; sleep: boolean }; 
   onToggleChange: (key: keyof typeof toggleStates, checked: boolean) => void;
   bpmValue: number | null;
   onBpmChange: (value: number | null) => void;
@@ -189,6 +190,70 @@ function ListItem({ label, checked, onChange, disabled = false }: { label: strin
             <p className="leading-[1.43] whitespace-pre">{label}</p>
           </div>
           <ToggleSwitch checked={checked} onCheckedChange={onChange} disabled={disabled} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SectionHeader({ text }: { text: string }) {
+  return (
+    <div className="py-1.5" style={{ paddingLeft: '12px', paddingRight: '12px' }}>
+      <div className="font-['Mona_Sans',_sans-serif] text-[12px] font-medium tracking-[0.5px] uppercase text-[rgba(255,255,255,0.6)]">
+        {text}
+      </div>
+    </div>
+  );
+}
+
+function SettingsRow({ label, checked, onChange, disabled = false }: { label: string; checked: boolean; onChange: (checked: boolean) => void; disabled?: boolean }) {
+  return (
+    <div className="relative shrink-0 w-full">
+      <div className="flex flex-row items-center relative size-full">
+        <div className="box-border content-stretch flex items-center justify-between py-1 relative w-full" style={{ paddingLeft: '12px', paddingRight: '12px' }}>
+          <div className={`font-semibold leading-[0] not-italic relative shrink-0 text-[14px] text-nowrap tracking-[-0.25px] ${disabled ? 'text-[rgba(255,255,255,0.3)]' : 'text-[#ffffff]'}`}>
+            <p className="leading-[1.43] whitespace-pre">{label}</p>
+          </div>
+          <ToggleSwitch checked={checked} onCheckedChange={onChange} disabled={disabled} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GoalRowWithInput({ label, dotColor, value, onChange, placeholder, min, max, disabled = false }: { 
+  label: string; 
+  dotColor: string; 
+  value: number | null;
+  onChange: (value: number | null) => void;
+  placeholder: string;
+  min: number;
+  max: number;
+  disabled?: boolean;
+}) {
+  return (
+    <div className="relative shrink-0 w-full">
+      <div className="flex flex-row items-center relative size-full">
+        <div className="box-border content-stretch flex items-center py-1 relative w-full" style={{ paddingLeft: '12px', paddingRight: '12px' }}>
+          <div className="flex items-center gap-2" style={{ marginRight: '16px' }}>
+            <div 
+              className="rounded-full shrink-0" 
+              style={{ backgroundColor: dotColor, width: '12px', height: '12px' }}
+            />
+            <div className={`font-semibold leading-[0] not-italic relative shrink-0 text-[14px] text-nowrap tracking-[-0.25px] ${disabled ? 'text-[rgba(255,255,255,0.3)]' : 'text-[#ffffff]'}`}>
+              <p className="leading-[1.43] whitespace-pre">{label}</p>
+            </div>
+          </div>
+          <div style={{ marginLeft: 'auto' }}>
+            <Frame2608430 
+              value={value} 
+              onChange={onChange} 
+              placeholder={placeholder} 
+              min={min} 
+              max={max}
+              disabled={disabled}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -253,7 +318,7 @@ function Frame2608430({ value, onChange, placeholder, min, max, disabled }: {
   };
 
   return (
-    <div className="relative w-full pr-4">
+    <div className="relative" style={{ width: '35px', flexShrink: 0 }}>
       <div className="relative w-full">
         <input
           ref={inputRef}
@@ -267,14 +332,24 @@ function Frame2608430({ value, onChange, placeholder, min, max, disabled }: {
           placeholder={placeholder}
           disabled={disabled}
           className={`
-            bg-[#343434] rounded-[8px] px-3 py-1.5 w-full
+            rounded-[8px]
             text-[#ffffff] text-[14px] font-semibold tracking-[-0.25px]
             placeholder:text-[rgba(255,255,255,0.3)]
             outline-none
             transition-all duration-200
-            ${isFocused ? 'ring-2 ring-[#3DB2E0]' : ''}
+            ${isFocused ? 'ring-2 ring-[#3DB2E0] border-[#3DB2E0]' : ''}
             ${disabled ? 'opacity-30 cursor-not-allowed' : ''}
           `}
+          style={{
+            width: '35px',
+            paddingTop: '0px',
+            paddingBottom: '0px',
+            paddingLeft: '6px',
+            paddingRight: '6px',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.05)',
+            boxSizing: 'border-box'
+          }}
         />
         <AnimatedCheckmark 
           isVisible={showCheckmark} 
@@ -286,7 +361,7 @@ function Frame2608430({ value, onChange, placeholder, min, max, disabled }: {
 }
 
 function DropdownMenu({ toggleStates, onToggleChange, bpmValue, onBpmChange, hrvValue, onHrvChange }: {
-  toggleStates: { goals: boolean; lastWeek: boolean; sleep: boolean };
+  toggleStates: { lastWeek: boolean; sleep: boolean };
   onToggleChange: (key: keyof typeof toggleStates, checked: boolean) => void;
   bpmValue: number | null;
   onBpmChange: (value: number | null) => void;
@@ -294,103 +369,144 @@ function DropdownMenu({ toggleStates, onToggleChange, bpmValue, onBpmChange, hrv
   onHrvChange: (value: number | null) => void;
 }) {
   return (
-    <div className="absolute top-[calc(100%+8px)] right-0 bg-[#262626] rounded-[12px] shadow-[0px_4px_16px_rgba(0,0,0,0.4)] border border-[rgba(255,255,255,0.05)] overflow-hidden z-50 min-w-[180px]">
+    <div 
+      className="absolute top-[calc(100%+8px)] left-0 bg-[#262626] rounded-[12px] shadow-[0px_4px_16px_rgba(0,0,0,0.4)] border border-[rgba(255,255,255,0.05)] z-50"
+      onClick={(e) => e.stopPropagation()}
+      style={{ paddingTop: '6px', paddingBottom: '6px' }}
+    >
       <div className="flex flex-col">
-        <ListItem 
-          label="Add goals" 
-          checked={toggleStates.goals} 
-          onChange={(checked) => onToggleChange('goals', checked)}
-          disabled={toggleStates.lastWeek}
-        />
-        <div className={`transition-all duration-300 ease-in-out overflow-hidden ${toggleStates.goals && !toggleStates.lastWeek ? 'max-h-[200px] opacity-100' : 'max-h-0 opacity-0'}`}>
-          <div className="px-4 py-2 space-y-2">
-            <Frame2608430 
-              value={bpmValue} 
-              onChange={onBpmChange} 
-              placeholder="Max BPM" 
-              min={40} 
-              max={99}
-              disabled={toggleStates.lastWeek}
-            />
-            <Frame2608430 
-              value={hrvValue} 
-              onChange={onHrvChange} 
-              placeholder="Min HRV" 
-              min={10} 
-              max={99}
-              disabled={toggleStates.lastWeek}
-            />
+        {/* Title */}
+        <div className="py-2" style={{ paddingLeft: '12px', paddingRight: '12px' }}>
+          <div className="font-['Mona_Sans',_sans-serif] text-[16px] font-semibold text-[#ffffff]">
+            Customize
           </div>
         </div>
-        <div className="h-[1px] bg-[rgba(255,255,255,0.05)]" />
-        <ListItem 
-          label="HRV" 
-          checked={toggleStates.sleep} 
-          onChange={(checked) => onToggleChange('sleep', checked)}
-          disabled={toggleStates.lastWeek}
-        />
-        <div className="h-[1px] bg-[rgba(255,255,255,0.05)]" />
-        <ListItem 
+
+        {/* COMPARE Section */}
+        <SectionHeader text="COMPARE" />
+        <SettingsRow 
           label="Last week" 
           checked={toggleStates.lastWeek} 
           onChange={(checked) => onToggleChange('lastWeek', checked)}
+          disabled={false}
         />
+        <div style={{ marginTop: '4px' }}>
+          <SettingsRow 
+            label="HRV" 
+            checked={toggleStates.sleep} 
+            onChange={(checked) => onToggleChange('sleep', checked)}
+            disabled={false}
+          />
+        </div>
+
+        {/* GOALS Section */}
+        <div style={{ marginTop: '8px' }}>
+          <SectionHeader text="GOALS" />
+          <div style={{ marginTop: '-4px' }}>
+            <GoalRowWithInput 
+              label="Max BPM" 
+              dotColor="#D946EF"
+              value={bpmValue}
+              onChange={onBpmChange}
+              placeholder=""
+              min={40}
+              max={99}
+            />
+          </div>
+          {toggleStates.sleep && (
+            <div style={{ marginTop: '4px' }}>
+              <GoalRowWithInput 
+                label="Min HRV" 
+                dotColor="#8B5CF6"
+                value={hrvValue}
+                onChange={onHrvChange}
+                placeholder=""
+                min={10}
+                max={99}
+                disabled={false}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
-function SleepFill() {
+function SleepFill({ activeDate }: { activeDate: string }) {
+  // Create bar graph for HRV data - heights based on the reference image
+  // Circle centers are at: 23, 70, 116, 163, 210, 256, 303
+  // (calculated from circle x positions: inactive x + 7, or activeX + 8.5)
+  const barPositions = [
+    { date: '14', centerX: 23, height: 103 }, // -12px
+    { date: '15', centerX: 70, height: 123 }, // -12px
+    { date: '16', centerX: 116, height: 133 }, // -12px
+    { date: '17', centerX: 163, height: 113 }, // -12px
+    { date: '18', centerX: 210, height: 137 }, // Adjusted so top is 8px above circle (y=10, so bar top at y=2)
+    { date: '19', centerX: 256, height: 118 }, // -12px
+    { date: '20', centerX: 303, height: 128 }, // -12px
+  ];
+
+  const bottomY = 139; // At bottom of viewBox
+  const barWidth = 32; // Bars width
+
   return (
-    <div className="absolute h-[106px] left-4 top-[103px] w-[350px] pointer-events-none">
-      <div className="absolute bottom-[-5.66%] left-0 right-0 top-0">
-        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 350 112">
-          <defs>
-            <linearGradient id="sleepGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#B9E3F4" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="#B9E3F4" stopOpacity="0.1" />
-            </linearGradient>
-          </defs>
-          <g id="Frame 2608473" opacity="0.3">
-            <path d={svgPathsSleep.p1e94a100} fill="url(#sleepGradient)" id="sleep-fill" />
-          </g>
-        </svg>
-      </div>
+    <div className="absolute inset-0 pointer-events-none">
+      <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 326 139">
+        {barPositions.map((bar) => {
+          const isActive = bar.date === activeDate;
+          // Position bars so they extend 24px beyond viewBox bottom (y=139) to be closer to dates
+          // Keep the top position the same, but extend height downward
+          const barTop = bottomY - bar.height;
+          // Center the bar on the circle's center position
+          const barX = bar.centerX - barWidth / 2;
+          return (
+            <rect
+              key={bar.date}
+              x={barX}
+              y={barTop}
+              width={barWidth}
+              height={bar.height}
+              fill={isActive ? "#5BA3C0" : "#3D6E8A"}
+              rx="4"
+              ry="4"
+            />
+          );
+        })}
+      </svg>
     </div>
   );
 }
 
 function Frame2608475() {
   return (
-    <div className="absolute h-[98px] left-4 top-[68px] w-[350px]">
-      <div className="absolute bottom-[-35.2%] left-0 right-0 top-0">
-        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 350 133">
-          <g id="Frame 2608473" opacity="0.2">
-            <g id="Frame 2608414">
-              <rect fill="var(--fill-0, #B9E3F4)" height="14" rx="7" width="14" x="222" y="11.5" />
-            </g>
-            <g id="Frame 2608411">
-              <rect fill="var(--fill-0, #B9E3F4)" height="14" rx="7" width="14" x="7" y="90" />
-            </g>
-            <path d={svgPathsLastWeek.p1e95b100} id="Vector 97" stroke="var(--stroke-0, #B9E3F4)" strokeLinecap="round" strokeWidth="3" />
-            <g id="Frame 2608411_2">
-              <rect fill="var(--fill-0, #B9E3F4)" height="14" rx="7" width="14" x="62" y="118.5" />
-            </g>
-            <g id="Frame 2608412">
-              <rect fill="var(--fill-0, #B9E3F4)" height="14" rx="7" width="14" x="116" y="34.5" />
-            </g>
-            <g id="Frame 2608413">
-              <rect fill="var(--fill-0, #B9E3F4)" height="14" rx="7" width="14" x="326" y="69.5" />
-            </g>
-            <g id="Frame 2608412_2">
-              <rect fill="var(--fill-0, #B9E3F4)" height="14" rx="7" width="14" x="170.666" y="108.5" />
-            </g>
-            <g id="Frame 2608414_2">
-              <rect fill="var(--fill-0, #B9E3F4)" height="14" rx="7" width="14" x="275" y="54.5" />
-            </g>
+    <div className="absolute inset-0">
+      <svg className="block size-full pointer-events-none" fill="none" preserveAspectRatio="none" viewBox="0 0 326 139">
+        <g id="Frame 2608473" opacity="0.2">
+          <g id="Frame 2608411">
+            <rect fill="var(--fill-0, #B9E3F4)" height="14" rx="7" width="14" x="16" y="90" />
           </g>
-        </svg>
-      </div>
+          <g id="Frame 2608411_2">
+            <rect fill="var(--fill-0, #B9E3F4)" height="14" rx="7" width="14" x="63" y="118.5" />
+          </g>
+          <g id="Frame 2608412">
+            <rect fill="var(--fill-0, #B9E3F4)" height="14" rx="7" width="14" x="109" y="34.5" />
+          </g>
+          <g id="Frame 2608412_2">
+            <rect fill="var(--fill-0, #B9E3F4)" height="14" rx="7" width="14" x="156" y="108.5" />
+          </g>
+          <g id="Frame 2608414">
+            <rect fill="var(--fill-0, #B9E3F4)" height="14" rx="7" width="14" x="203" y="11.5" />
+          </g>
+          <g id="Frame 2608414_2">
+            <rect fill="var(--fill-0, #B9E3F4)" height="14" rx="7" width="14" x="249" y="54.5" />
+          </g>
+          <g id="Frame 2608413">
+            <rect fill="var(--fill-0, #B9E3F4)" height="14" rx="7" width="14" x="296" y="69.5" />
+          </g>
+          <path d="M 23 97 L 70 125.5 L 116 41.5 L 163 115.5 L 210 18.5 L 256 61.5 L 303 76.5" id="Vector 97" stroke="var(--stroke-0, #B9E3F4)" strokeLinecap="round" strokeWidth="3" />
+        </g>
+      </svg>
     </div>
   );
 }
@@ -808,14 +924,19 @@ export default function App() {
   const [displayedDate, setDisplayedDate] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [toggleStates, setToggleStates] = useState({
-    goals: false,
     lastWeek: false,
     sleep: false
+  });
+  const [goalStates, setGoalStates] = useState({
+    maxBpm: false,
+    minHrv: false
   });
   const [bpmValue, setBpmValue] = useState<number | null>(null);
   const [hrvValue, setHrvValue] = useState<number | null>(null);
   const [lastValidBpm, setLastValidBpm] = useState<number | null>(null);
+  const [lastValidHrv, setLastValidHrv] = useState<number | null>(null);
   const [goalLineAnimatingOut, setGoalLineAnimatingOut] = useState(false);
+  const [hrvGoalLineAnimatingOut, setHrvGoalLineAnimatingOut] = useState(false);
 
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const displayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -829,6 +950,7 @@ export default function App() {
     '15': { bpm: 68, color: '#ffffff' },
     '14': { bpm: 54, color: '#ffffff' }
   };
+
 
   const currentData = (displayedDate && heartRateData[displayedDate as keyof typeof heartRateData]) 
     ? heartRateData[displayedDate as keyof typeof heartRateData] 
@@ -850,9 +972,8 @@ export default function App() {
         setDisplayedDate(date);
       }, 150);
     } else {
-      hoverTimeoutRef.current = setTimeout(() => {
-        setHoveredDate(null);
-      }, 300);
+      // Immediately snap back to April 20th when unhovering
+      setHoveredDate(null);
       displayTimeoutRef.current = setTimeout(() => {
         setDisplayedDate(null);
       }, 300);
@@ -887,24 +1008,31 @@ export default function App() {
 
   const handleHrvChange = (newValue: number | null) => {
     setHrvValue(newValue);
+    
+    if (newValue === null) {
+      if (lastValidHrv !== null) {
+        setHrvGoalLineAnimatingOut(true);
+        setTimeout(() => {
+          setLastValidHrv(null);
+          setHrvGoalLineAnimatingOut(false);
+        }, 500);
+      }
+      return;
+    }
+    
+    setLastValidHrv(newValue);
+    setHrvGoalLineAnimatingOut(false);
   };
 
   const handleToggleChange = (key: keyof typeof toggleStates, checked: boolean) => {
     if (key === 'lastWeek') {
-      if (checked) {
-        setToggleStates({
-          goals: false,
-          lastWeek: true,
-          sleep: false
-        });
-      } else {
-        setToggleStates(prev => ({ ...prev, lastWeek: false }));
+      setToggleStates(prev => ({ ...prev, lastWeek: checked }));
+    } else if (key === 'sleep') {
+      setToggleStates(prev => ({ ...prev, sleep: checked }));
+      // If HRV is turned off, clear the HRV value
+      if (!checked && hrvValue !== null) {
+        setHrvValue(null);
       }
-    } else if (key === 'goals' || key === 'sleep') {
-      if (checked && toggleStates.lastWeek) {
-        return;
-      }
-      setToggleStates(prev => ({ ...prev, [key]: checked }));
     }
   };
 
@@ -921,7 +1049,18 @@ export default function App() {
     return bottomPadding - (normalized * usableHeight);
   };
 
+  const hrvToY = (hrv: number) => {
+    // Assuming HRV uses similar scale, adjust as needed
+    const topPadding = 17;
+    const bottomPadding = 97;
+    const usableHeight = bottomPadding - topPadding;
+    const hrvRange = 76 - 54; // Adjust range based on actual HRV data
+    const normalized = (hrv - 54) / hrvRange;
+    return bottomPadding - (normalized * usableHeight);
+  };
+
   const goalLineY = lastValidBpm !== null ? bpmToY(lastValidBpm) : null;
+  const hrvGoalLineY = lastValidHrv !== null ? hrvToY(lastValidHrv) : null;
 
   return (
     <div className="bg-[#171719] fixed inset-0 flex items-center justify-center" onClick={closeMenu}>
@@ -932,40 +1071,54 @@ export default function App() {
         {/* Header row - Resting and icon button */}
         <div className="flex items-center justify-between mb-4">
           <div className="font-['Mona_Sans',_sans-serif] text-[#ffffff]" style={{ fontSize: '24px', fontWeight: 600 }}>
-            Resting
+            Resting Heart Rate
           </div>
           <CompareButton
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleMenu();
-            }}
-            isOpen={isMenuOpen}
-            toggleStates={toggleStates}
-            onToggleChange={handleToggleChange}
-            bpmValue={bpmValue}
-            onBpmChange={handleBpmChange}
-            hrvValue={hrvValue}
-            onHrvChange={handleHrvChange}
-          />
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleMenu();
+              }}
+              isOpen={isMenuOpen}
+              toggleStates={toggleStates}
+              onToggleChange={handleToggleChange}
+              bpmValue={bpmValue}
+              onBpmChange={handleBpmChange}
+              hrvValue={hrvValue}
+              onHrvChange={handleHrvChange}
+            />
         </div>
 
         {/* Inner wrapper - contains BPM, graph, and dates */}
-        <div className="rounded-[8px] p-4 relative w-[358px]" style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.05)' }}>
-          {/* BPM display */}
-          <div className="mb-4">
-            <div className="flex items-baseline gap-1">
-              <span className="font-['Mona_Sans',_sans-serif]" style={{ fontSize: '20px', fontWeight: 600, color: currentData.color }}>
-                {currentData.bpm}
-              </span>
-              <span className="font-['Mona_Sans',_sans-serif]" style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.5)' }}>
-                BPM
-              </span>
+        <div className="rounded-[8px] relative w-[358px]" style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.05)', paddingTop: '16px', paddingLeft: '16px', paddingRight: '16px', paddingBottom: '0px' }}>
+          {/* Top row - BPM/Today on left, Legend on right */}
+          <div className="flex items-start justify-between" style={{ marginBottom: '40px' }}>
+            {/* BPM display */}
+            <div>
+              <div className="font-['Mona_Sans',_sans-serif]" style={{ fontSize: '20px', fontWeight: 600, color: currentData.color }}>
+                {currentData.bpm} bpm
+              </div>
+              <div className="font-['Mona_Sans',_sans-serif]" style={{ fontSize: '14px', fontWeight: 400, color: 'rgba(255,255,255,0.6)', marginTop: '-2px' }}>
+                {(displayedDate || '20') === '20' ? 'Today' : `April ${displayedDate || '20'} 2025`}
+              </div>
             </div>
+            {/* Legend - shown when both RHR and HRV are visible */}
+            {toggleStates.sleep && (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="rounded-full" style={{ width: '13px', height: '13px', backgroundColor: '#B9E3F4' }} />
+                  <span className="font-['Mona_Sans',_sans-serif] text-[#ffffff]" style={{ fontSize: '14px' }}>Heart Rate</span>
+                </div>
+                <div className="flex items-center gap-2" style={{ marginTop: '-4px' }}>
+                  <div className="rounded-full" style={{ width: '13px', height: '13px', backgroundColor: '#3D6E8A' }} />
+                  <span className="font-['Mona_Sans',_sans-serif] text-[#ffffff]" style={{ fontSize: '14px' }}>HRV</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Graph area */}
-          <div className="relative h-[139px] w-full mb-4">
-            {toggleStates.sleep && <SleepFill />}
+          <div className="relative h-[139px] w-full mb-1">
+            {toggleStates.sleep && <SleepFill activeDate={hoveredDate || '20'} />}
             {toggleStates.lastWeek && <Frame2608475 />}
 
             <div className="absolute inset-0">
@@ -1026,11 +1179,11 @@ export default function App() {
               </svg>
             </div>
 
-            {toggleStates.goals && goalLineY !== null && (
+            {bpmValue !== null && goalLineY !== null && (
               <div
                 className={`absolute left-0 w-full h-[2px] z-20 transition-opacity duration-500 ${goalLineAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
                 style={{
-                  top: `${goalLineY}px`,
+                  top: `${goalLineY - 6}px`,
                 }}
               >
                 <svg width="100%" height="2" className="block">
@@ -1039,7 +1192,27 @@ export default function App() {
                     y1="1"
                     x2="100%"
                     y2="1"
-                    stroke="#FF6B6B"
+                    stroke="#D946EF"
+                    strokeWidth="2"
+                    strokeDasharray="5,5"
+                  />
+                </svg>
+              </div>
+            )}
+            {hrvValue !== null && hrvGoalLineY !== null && toggleStates.sleep && (
+              <div
+                className={`absolute left-0 w-full h-[2px] z-20 transition-opacity duration-500 ${hrvGoalLineAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
+                style={{
+                  top: `${hrvGoalLineY}px`,
+                }}
+              >
+                <svg width="100%" height="2" className="block">
+                  <line
+                    x1="0"
+                    y1="1"
+                    x2="100%"
+                    y2="1"
+                    stroke="#8B5CF6"
                     strokeWidth="2"
                     strokeDasharray="5,5"
                   />
@@ -1051,22 +1224,27 @@ export default function App() {
           {/* Date tabs */}
           <div className="w-full">
             <div className="box-border content-stretch flex flex-row gap-1 items-stretch justify-start p-1 relative w-full">
-              {['14', '15', '16', '17', '18', '19', '20'].map((date) => (
-                <button
-                  key={date}
-                  onClick={() => handleTabClick(date)}
-                  className="basis-0 grow min-h-px min-w-px relative shrink-0 cursor-pointer"
-                >
-                  <div className="flex flex-row items-center justify-center overflow-clip relative size-full">
-                    <div className="box-border content-stretch flex gap-2 items-center justify-center px-2 py-1.5 relative w-full">
-                      <div className={`-webkit-box css-j5jd4p font-['Mona_Sans',_sans-serif] font-medium leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${selectedTab === date ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
-                        <p className="mb-0">APRIL</p>
-                        <p>{date}</p>
+              {['14', '15', '16', '17', '18', '19', '20'].map((date) => {
+                const isActive = hoveredDate ? hoveredDate === date : date === '20';
+                return (
+                  <button
+                    key={date}
+                    onClick={() => handleTabClick(date)}
+                    onMouseEnter={() => handleHover(date)}
+                    onMouseLeave={() => handleHover(null)}
+                    className="basis-0 grow min-h-px min-w-px relative shrink-0 cursor-pointer"
+                  >
+                    <div className="flex flex-row items-center justify-center overflow-clip relative size-full">
+                      <div className="box-border content-stretch flex gap-2 items-center justify-center px-2 py-1.5 relative w-full">
+                        <div className={`-webkit-box css-j5jd4p font-['Mona_Sans',_sans-serif] font-medium leading-[1.2] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[10px] ${isActive ? 'text-[#ffffff]' : 'text-[rgba(255,255,255,0.6)]'} text-center text-nowrap whitespace-pre`}>
+                          <p className="mb-0">APRIL</p>
+                          <p>{date}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
