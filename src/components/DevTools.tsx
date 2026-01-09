@@ -390,12 +390,33 @@ export default function DevTools() {
       copyToClipboard(text);
       setSelectedProperties([]); // Clear selection after copying
     } else if (selectedElement) {
-      // Copy all styles with selector wrapper
-      const text = `${selectedElement.selector} {\n${selectedElement.computedStyles
-        .map(s => `  ${s.property}: ${s.value};`)
-        .join('\n')}\n}`;
-      copyToClipboard(text);
+      // Copy all styles in menu order: element selector, inline styles, key styles
+      const parts: string[] = [];
+      
+      // Element styles (selector)
+      parts.push(`/* Element: ${selectedElement.selector} */`);
+      
+      // Inline styles
+      if (selectedElement.inlineStyles.length > 0) {
+        parts.push('\n/* Inline Styles */');
+        parts.push(selectedElement.inlineStyles.map(s => `${s.property}: ${s.value};`).join('\n'));
+      }
+      
+      // Key styles
+      const keyStyles = getKeyStyles();
+      if (keyStyles.length > 0) {
+        parts.push('\n/* Key Styles */');
+        parts.push(keyStyles.map(s => `${s.property}: ${s.value};`).join('\n'));
+      }
+      
+      copyToClipboard(parts.join('\n'));
     }
+    
+    // Show green check feedback
+    setCopiedSection('copyAll');
+    setTimeout(() => {
+      setCopiedSection(null);
+    }, 500);
   };
 
   // Get key styles with filtering
@@ -744,12 +765,19 @@ export default function DevTools() {
                   <div className="sticky bottom-0 p-4 border-t border-zinc-800" data-devtools>
                     <button
                       onClick={handleCopyAllStyles}
-                      className="w-full bg-gradient-to-r from-[#5127c4] to-[#9f27c4] text-white py-2 px-4 rounded-lg font-medium text-[12px] hover:opacity-90 transition-opacity text-center"
+                      className="w-full bg-gradient-to-r from-[#5127c4] to-[#9f27c4] text-white py-2 px-4 rounded-lg font-medium text-[12px] hover:opacity-90 transition-opacity text-center flex items-center justify-center gap-2"
                       data-devtools
                     >
-                      {selectedProperties.length > 0
-                        ? `Copy Styles (${selectedProperties.length})`
-                        : 'Copy All Styles'}
+                      {copiedSection === 'copyAll' ? (
+                        <>
+                          <Check className="w-4 h-4 text-green-400" />
+                          <span>Copied!</span>
+                        </>
+                      ) : (
+                        selectedProperties.length > 0
+                          ? `Copy Styles (${selectedProperties.length})`
+                          : 'Copy All Styles'
+                      )}
                     </button>
                   </div>
                 )}
