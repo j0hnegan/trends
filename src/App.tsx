@@ -460,7 +460,7 @@ function DropdownMenu({ toggleStates, onToggleChange, bpmValue, onBpmChange, hrv
   );
 }
 
-function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animateLastWeek = false, onHover, onDateClick, showDefaultBars = true, showSecondBarGraph = false, secondBarGraphValues, secondBarGraphHeights, showLastWeek = false, lastWeekBarGraphValues, lastWeekBarGraphHeights }: { 
+function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animateLastWeek = false, onHover, onDateClick, showDefaultBars = true, showDefaultLabels = true, showSecondBarGraph = false, secondBarGraphValues, secondBarGraphHeights, showLastWeek = false, lastWeekBarGraphValues, lastWeekBarGraphHeights }: { 
   activeDate: string; 
   animate: boolean; 
   animateSecondBarGraph?: boolean;
@@ -468,6 +468,7 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
   onHover: (date: string | null) => void; 
   onDateClick: (date: string) => void;
   showDefaultBars?: boolean;
+  showDefaultLabels?: boolean;
   showSecondBarGraph?: boolean;
   secondBarGraphValues?: { [key: string]: number };
   secondBarGraphHeights?: Array<{date: string; centerX: number; height: number}>;
@@ -702,6 +703,37 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
           );
         })}
       </svg>
+      {/* Numbers above bars (default/main bar graph) - only when hovering/active and labels enabled */}
+      {showDefaultBars && showDefaultLabels && (
+        <div className="absolute inset-0 pointer-events-none" style={{ overflow: 'visible' }}>
+          {barPositions.map((bar) => {
+            const value = hrvValues[bar.date];
+            const top = bottomY - bar.height - 4; // 4px above bar
+            const left = bar.centerX;
+            const isActive = bar.date === activeDate;
+            if (!isActive) return null;
+            return (
+              <div
+                key={`label-${bar.date}`}
+                style={{
+                  position: 'absolute',
+                  left: `${left}px`,
+                  top: `${top}px`,
+                  transform: 'translate(-50%, -100%)',
+                  color: '#ffffff',
+                  fontFamily: "'Mona Sans', sans-serif",
+                  fontSize: '18px',
+                  fontWeight: 700,
+                  letterSpacing: 'normal',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {value}
+              </div>
+            );
+          })}
+        </div>
+      )}
       {/* HTML overlay for second bar graph values - only show when second bar graph is on */}
       {showSecondBarGraph && secondBarGraphValues && secondBarGraphHeights && barPercentages.map((bar) => {
         const isActive = bar.date === activeDate;
@@ -1321,13 +1353,13 @@ export default function App() {
 
   // Third chart - second line overlay data (new varied set)
   const secondLinePoints3 = [
-    { date: '14', x: 16, y: 95, activeX: 14.5, activeY: 93.5 },
-    { date: '15', x: 63, y: 65, activeX: 61.5, activeY: 63.5 },
-    { date: '16', x: 109, y: 55, activeX: 107.5, activeY: 53.5 },
-    { date: '17', x: 156, y: 78, activeX: 154.5, activeY: 76.5 },
-    { date: '18', x: 203, y: 40, activeX: 201.5, activeY: 38.5 },
-    { date: '19', x: 249, y: 68, activeX: 247.5, activeY: 66.5 },
-    { date: '20', x: 296, y: 88, activeX: 294.5, activeY: 86.5 },
+    { date: '14', x: 16, y: 95, activeX: 14.5, activeY: 93.5, value: 54 },
+    { date: '15', x: 63, y: 65, activeX: 61.5, activeY: 63.5, value: 62 },
+    { date: '16', x: 109, y: 55, activeX: 107.5, activeY: 53.5, value: 68 },
+    { date: '17', x: 156, y: 78, activeX: 154.5, activeY: 76.5, value: 64 },
+    { date: '18', x: 203, y: 40, activeX: 201.5, activeY: 38.5, value: 59 },
+    { date: '19', x: 249, y: 68, activeX: 247.5, activeY: 66.5, value: 57 },
+    { date: '20', x: 296, y: 88, activeX: 294.5, activeY: 86.5, value: 60 },
   ];
   const secondLinePath3 = "M 23 100 L 70 70 L 116 60 L 163 82 L 210 44 L 256 72 L 303 92";
 
@@ -1789,7 +1821,7 @@ export default function App() {
 
           {/* Graph area */}
           <div className="relative h-[139px] w-full mb-1">
-            {toggleStates.sleep && <SleepFill activeDate={hoveredDate || fixedDate} animate={shouldAnimateBars} onHover={handleHover} onDateClick={handleDateClick} />}
+            {toggleStates.sleep && <SleepFill activeDate={hoveredDate || fixedDate} animate={shouldAnimateBars} onHover={handleHover} onDateClick={handleDateClick} showDefaultLabels={true} />}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
@@ -2004,6 +2036,7 @@ export default function App() {
                 onHover={handleHover2}
                 onDateClick={handleDateClick2}
                 showDefaultBars={true}
+                showDefaultLabels={false}
                 showSecondBarGraph={toggleStates2.secondBarGraph}
                 secondBarGraphValues={secondBarGraphValues2}
                 secondBarGraphHeights={secondBarGraphHeights2}
@@ -2174,8 +2207,22 @@ export default function App() {
                   strokeWidth="3"
                   strokeLinecap="round"
                 />
-                {secondLinePoints3.map((point) => {
+                {secondLinePoints3.map((point, idx) => {
                   const isActive3 = hoveredDate3 ? hoveredDate3 === point.date : point.date === fixedDate3;
+                  // Clock offsets relative to circle center (circle is 17x17, center at +8.5)
+                  // idx 0 = date 14, idx 6 = date 20
+                  const offsets = [
+                    { dx: 34, dy: 22 },   // idx 0, date 14 -> 4 o'clock (lower-right)
+                    { dx: 8.5, dy: 38 },  // idx 1, date 15 -> 6 o'clock (below)
+                    { dx: 8.5, dy: -10 }, // idx 2, date 16 -> 12 o'clock (above)
+                    { dx: 8.5, dy: 38 },  // idx 3, date 17 -> 6 o'clock (below)
+                    { dx: 8.5, dy: 38 },  // idx 4, date 18 -> 6 o'clock (below)
+                    { dx: 8.5, dy: -10 }, // idx 5, date 19 -> 12 o'clock (above)
+                    { dx: -10, dy: 30 },  // idx 6, date 20 -> 8 o'clock (lower-left)
+                  ];
+                  const { dx, dy } = offsets[idx] || { dx: 8.5, dy: -8 };
+                  const labelLeft = point.activeX + dx;
+                  const labelY = point.activeY + dy;
                   return (
                     <g key={point.date}>
                       <rect
@@ -2200,17 +2247,31 @@ export default function App() {
                         style={{ pointerEvents: 'none' }}
                       />
                       {isActive3 && (
-                        <rect
-                          height="17"
-                          rx="8.5"
-                          stroke="#E5F4FB"
-                          strokeWidth="3"
-                          width="17"
-                          x={point.activeX}
-                          y={point.activeY}
-                          fill="none"
-                          style={{ pointerEvents: 'none' }}
-                        />
+                        <>
+                          <rect
+                            height="17"
+                            rx="8.5"
+                            stroke="#E5F4FB"
+                            strokeWidth="3"
+                            width="17"
+                            x={point.activeX}
+                            y={point.activeY}
+                            fill="none"
+                            style={{ pointerEvents: 'none' }}
+                          />
+                          <text
+                            x={labelLeft}
+                            y={labelY}
+                            textAnchor="middle"
+                            fill="#ffffff"
+                            fontFamily="'Mona Sans', sans-serif"
+                            fontSize="14"
+                            fontWeight="700"
+                            style={{ pointerEvents: 'none' }}
+                          >
+                            {secondLinePoints3[idx].value ?? ''}
+                          </text>
+                        </>
                       )}
                     </g>
                   );
