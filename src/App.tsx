@@ -460,7 +460,7 @@ function DropdownMenu({ toggleStates, onToggleChange, bpmValue, onBpmChange, hrv
   );
 }
 
-function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animateLastWeek = false, onHover, onDateClick, showDefaultBars = true, showDefaultLabels = true, showSecondBarGraph = false, secondBarGraphValues, secondBarGraphHeights, showLastWeek = false, lastWeekBarGraphValues, lastWeekBarGraphHeights }: { 
+function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animateLastWeek = false, onHover, onDateClick, showDefaultBars = true, showDefaultLabels = true, showSecondBarGraph = false, secondBarGraphValues, secondBarGraphHeights, showLastWeek = false, lastWeekBarGraphValues, lastWeekBarGraphHeights, sideBySide = false }: { 
   activeDate: string; 
   animate: boolean; 
   animateSecondBarGraph?: boolean;
@@ -475,6 +475,7 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
   showLastWeek?: boolean;
   lastWeekBarGraphValues?: { [key: string]: number };
   lastWeekBarGraphHeights?: Array<{date: string; centerX: number; height: number}>;
+  sideBySide?: boolean;
 }) {
   // Create bar graph for HRV data - heights based on the reference image
   // Circle centers are at: 23, 70, 116, 163, 210, 256, 303
@@ -501,7 +502,92 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
   ];
 
   const bottomY = 139; // At bottom of viewBox
-  const barWidth = 32; // Bars width
+  const barWidth = 32; // Bars width (total slot width per date)
+
+  // Side-by-side layout: compute dynamic widths and offsets
+  const totalSlotWidth = 32;
+  const sideGap = 4;
+  const barGroupCount = sideBySide
+    ? (showDefaultBars ? 1 : 0) + (showSecondBarGraph ? 1 : 0) + (showLastWeek ? 1 : 0)
+    : 1;
+  const individualBarWidth = sideBySide && barGroupCount > 1
+    ? (totalSlotWidth - (barGroupCount - 1) * sideGap) / barGroupCount
+    : totalSlotWidth;
+
+  // Assign slot indices: overlay bars on the left, default bar on the right
+  let nextSlot = 0;
+  const lastWeekSlotIndex = showLastWeek ? nextSlot++ : -1;
+  const secondBarSlotIndex = showSecondBarGraph ? nextSlot++ : -1;
+  const defaultBarSlotIndex = showDefaultBars ? nextSlot : 0;
+
+  const getBarX = (centerX: number, slotIndex: number) => {
+    if (!sideBySide || barGroupCount <= 1) return centerX - totalSlotWidth / 2;
+    const slotLeft = centerX - totalSlotWidth / 2;
+    return slotLeft + slotIndex * (individualBarWidth + sideGap);
+  };
+
+  // Animate default bar width smoothly when sideBySide layout changes
+  const [animDefaultWidth, setAnimDefaultWidth] = useState(totalSlotWidth);
+  const [deferOverlays, setDeferOverlays] = useState(false);
+  const [overlayGrowProgress, setOverlayGrowProgress] = useState(1); // 0→1 grow animation, 1 = fully grown
+  const rafRef = useRef<number | null>(null);
+  const overlayGrowRafRef = useRef<number | null>(null);
+  const prevTargetRef = useRef(totalSlotWidth);
+  const prevBarGroupCountRef = useRef(barGroupCount);
+
+  useEffect(() => {
+    const target = sideBySide ? individualBarWidth : totalSlotWidth;
+    const groupIncreased = sideBySide && barGroupCount > prevBarGroupCountRef.current;
+    prevBarGroupCountRef.current = barGroupCount;
+
+    if (prevTargetRef.current === target) return;
+
+    // If an overlay just appeared, defer its rendering until shrink finishes
+    if (groupIncreased) {
+      setDeferOverlays(true);
+      setOverlayGrowProgress(0);
+    }
+
+    const from = prevTargetRef.current;
+    const to = target;
+    prevTargetRef.current = to;
+    const duration = 250;
+    const startTime = performance.now();
+
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+      setAnimDefaultWidth(from + (to - from) * eased);
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else if (groupIncreased) {
+        // Shrink done → show overlay bars and start grow-from-bottom animation
+        setDeferOverlays(false);
+        const growStart = performance.now();
+        const growDuration = 300;
+        const growTick = (now2: number) => {
+          const ge = now2 - growStart;
+          const gt = Math.min(ge / growDuration, 1);
+          const gEased = 1 - Math.pow(1 - gt, 3); // ease-out cubic
+          setOverlayGrowProgress(gEased);
+          if (gt < 1) {
+            overlayGrowRafRef.current = requestAnimationFrame(growTick);
+          }
+        };
+        if (overlayGrowRafRef.current) cancelAnimationFrame(overlayGrowRafRef.current);
+        overlayGrowRafRef.current = requestAnimationFrame(growTick);
+      }
+    };
+
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (overlayGrowRafRef.current) cancelAnimationFrame(overlayGrowRafRef.current);
+    };
+  }, [individualBarWidth, sideBySide, barGroupCount]);
 
   // Calculate bar positions as percentages for HTML overlay
   const barPercentages = barPositions.map(bar => ({
@@ -517,16 +603,23 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
         {showDefaultBars && barPositions.map((bar, index) => {
           const isActive = bar.date === activeDate;
           const barTop = bottomY - bar.height;
-          const barX = bar.centerX - barWidth / 2;
+          const hitAreaX = bar.centerX - totalSlotWidth / 2;
           const animationDelay = animate ? index * 0.04 : 0;
+
+          // When sideBySide, pin the right edge and derive x from animated width
+          const rightEdge = bar.centerX + totalSlotWidth / 2;
+          const defaultBarX = sideBySide
+            ? rightEdge - animDefaultWidth
+            : bar.centerX - totalSlotWidth / 2;
+          const defaultBarW = sideBySide ? animDefaultWidth : individualBarWidth;
           
           return (
             <g key={animate ? `${bar.date}-${animate}` : bar.date}>
-              {/* Invisible hit area for better hover detection */}
+              {/* Invisible hit area for better hover detection - always spans full slot */}
               <rect
-                x={barX - 5}
+                x={hitAreaX - 5}
                 y={0}
-                width={barWidth + 10}
+                width={totalSlotWidth + 10}
                 height={139}
                 fill="transparent"
                 className="cursor-pointer"
@@ -538,11 +631,12 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
               {/* Visible bar - animate only when animate prop is true (for chart 1) */}
               {animate ? (
                 <rect
-                  x={barX}
+                  x={defaultBarX}
                   y={bottomY}
-                  width={barWidth}
+                  width={defaultBarW}
                   height={0}
-                  fill={isActive ? "#5BA3C0" : "#3D6E8A"}
+                  fill={isActive ? "#3DB2E0" : "#56A7C7"}
+                  opacity={isActive ? 1 : 0.5}
                   rx="4"
                   ry="4"
                   style={{ pointerEvents: 'none' }}
@@ -570,11 +664,12 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
                 </rect>
               ) : (
                 <rect
-                  x={barX}
+                  x={defaultBarX}
                   y={barTop}
-                  width={barWidth}
+                  width={defaultBarW}
                   height={bar.height}
-                  fill={isActive ? "#5BA3C0" : "#3D6E8A"}
+                  fill={isActive ? "#3DB2E0" : "#56A7C7"}
+                  opacity={isActive ? 1 : 0.5}
                   rx="4"
                   ry="4"
                   style={{ pointerEvents: 'none' }}
@@ -583,32 +678,37 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
             </g>
           );
         })}
-        {/* Second bar graph overlay - conditional animation like chart 1 */}
-        {showSecondBarGraph && secondBarGraphHeights && secondBarGraphHeights.map((bar, index) => {
+        {/* Second bar graph - side by side or overlay depending on sideBySide prop */}
+        {showSecondBarGraph && !deferOverlays && secondBarGraphHeights && secondBarGraphHeights.map((bar, index) => {
           const isActive = bar.date === activeDate;
-          const barTop = bottomY - bar.height;
-          const barX = bar.centerX - barWidth / 2;
-          const animationDelay = animateSecondBarGraph ? index * 0.04 : 0;
+          const secondBarX = getBarX(bar.centerX, secondBarSlotIndex);
           
-          // Dynamic color logic:
-          // 2nd bar graph uses the specified color with 40% opacity
-          const activeColor = "rgba(167, 220, 241, 0.4)";
-          const inactiveColor = "rgba(167, 220, 241, 0.4)";
+          // 2nd bar graph: darker than original, 50% opacity when inactive
+          const activeColor = "#19799E";
+          const inactiveColor = "#2E7089";
+
+          // When sideBySide, use JS grow animation; otherwise use SVG <animate>
+          const useJsGrow = sideBySide && overlayGrowProgress < 1;
+          const animationDelay = (!sideBySide && animateSecondBarGraph) ? index * 0.04 : 0;
+          const displayHeight = useJsGrow ? bar.height * overlayGrowProgress : bar.height;
+          const displayTop = bottomY - displayHeight;
+          const svgAnimate = !sideBySide && animateSecondBarGraph;
           
           return (
-            <g key={animateSecondBarGraph ? `second-${bar.date}-anim` : `second-${bar.date}`}>
+            <g key={svgAnimate ? `second-${bar.date}-anim` : `second-${bar.date}`}>
               {/* Visible second bar */}
               <rect
-                x={barX}
-                y={animateSecondBarGraph ? bottomY : barTop}
-                width={barWidth}
-                height={animateSecondBarGraph ? 0 : bar.height}
+                x={secondBarX}
+                y={svgAnimate ? bottomY : displayTop}
+                width={individualBarWidth}
+                height={svgAnimate ? 0 : displayHeight}
                 fill={isActive ? activeColor : inactiveColor}
+                opacity={isActive ? 1 : 0.5}
                 rx="4"
                 ry="4"
                 style={{ pointerEvents: 'none' }}
               >
-                {animateSecondBarGraph && (
+                {svgAnimate && (
                   <>
                     <animate
                       attributeName="height"
@@ -623,7 +723,7 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
                     <animate
                       attributeName="y"
                       from={bottomY}
-                      to={barTop}
+                      to={bottomY - bar.height}
                       dur="0.2s"
                       begin={`${animationDelay}s`}
                       fill="freeze"
@@ -636,25 +736,30 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
             </g>
           );
         })}
-        {/* Last week bar graph overlay - conditional animation like chart 1 */}
-        {showLastWeek && lastWeekBarGraphHeights && lastWeekBarGraphHeights.map((bar, index) => {
+        {/* Last week bar graph - side by side or overlay depending on sideBySide prop */}
+        {showLastWeek && !deferOverlays && lastWeekBarGraphHeights && lastWeekBarGraphHeights.map((bar, index) => {
           const isActive = bar.date === activeDate;
-          const barTop = bottomY - bar.height;
-          const barX = bar.centerX - barWidth / 2;
-          const animationDelay = animateLastWeek ? index * 0.04 : 0;
+          const lastWeekBarX = getBarX(bar.centerX, lastWeekSlotIndex);
+          const hitAreaX = bar.centerX - totalSlotWidth / 2;
           
-          // Dynamic color logic:
-          // Last week uses the specified color with 40% opacity
-          const activeColor = "rgba(167, 220, 241, 0.4)";
-          const inactiveColor = "rgba(167, 220, 241, 0.4)";
+          // Last week: darker than original, 50% opacity when inactive
+          const activeColor = "#19799E";
+          const inactiveColor = "#2E7089";
+
+          // When sideBySide, use JS grow animation; otherwise use SVG <animate>
+          const useJsGrow = sideBySide && overlayGrowProgress < 1;
+          const animationDelay = (!sideBySide && animateLastWeek) ? index * 0.04 : 0;
+          const displayHeight = useJsGrow ? bar.height * overlayGrowProgress : bar.height;
+          const displayTop = bottomY - displayHeight;
+          const svgAnimate = !sideBySide && animateLastWeek;
           
           return (
-            <g key={animateLastWeek ? `lastweek-${bar.date}-anim` : `lastweek-${bar.date}`}>
-              {/* Invisible hit area for better hover detection */}
+            <g key={svgAnimate ? `lastweek-${bar.date}-anim` : `lastweek-${bar.date}`}>
+              {/* Invisible hit area for better hover detection - always spans full slot */}
               <rect
-                x={barX - 5}
+                x={hitAreaX - 5}
                 y={0}
-                width={barWidth + 10}
+                width={totalSlotWidth + 10}
                 height={139}
                 fill="transparent"
                 className="cursor-pointer"
@@ -665,16 +770,17 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
               />
               {/* Visible last week bar */}
               <rect
-                x={barX}
-                y={animateLastWeek ? bottomY : barTop}
-                width={barWidth}
-                height={animateLastWeek ? 0 : bar.height}
+                x={lastWeekBarX}
+                y={svgAnimate ? bottomY : displayTop}
+                width={individualBarWidth}
+                height={svgAnimate ? 0 : displayHeight}
                 fill={isActive ? activeColor : inactiveColor}
+                opacity={isActive ? 1 : 0.5}
                 rx="4"
                 ry="4"
                 style={{ pointerEvents: 'none' }}
               >
-                {animateLastWeek && (
+                {svgAnimate && (
                   <>
                     <animate
                       attributeName="height"
@@ -689,7 +795,7 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
                     <animate
                       attributeName="y"
                       from={bottomY}
-                      to={barTop}
+                      to={bottomY - bar.height}
                       dur="0.2s"
                       begin={`${animationDelay}s`}
                       fill="freeze"
@@ -734,40 +840,82 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
           })}
         </div>
       )}
-      {/* HTML overlay for second bar graph values - only show when second bar graph is on */}
-      {showSecondBarGraph && secondBarGraphValues && secondBarGraphHeights && barPercentages.map((bar) => {
+      {/* Side-by-side bar labels - show values above each bar when overlay is toggled on and date is hovered */}
+      {sideBySide && (showSecondBarGraph || showLastWeek) && !deferOverlays && barPositions.map((bar) => {
         const isActive = bar.date === activeDate;
-        const secondValue = secondBarGraphValues[bar.date];
-        const showValue = isActive && secondValue !== undefined;
-        // Find the corresponding second bar graph height
-        const secondBar = secondBarGraphHeights.find(b => b.date === bar.date);
-        if (!secondBar || !showValue) return null;
-        
-        // Find the tallest bar (default, second, or last week)
-        const defaultBarHeight = bar.height;
-        const secondBarHeight = secondBar.height;
-        const lastWeekBar = showLastWeek && lastWeekBarGraphHeights ? lastWeekBarGraphHeights.find(b => b.date === bar.date) : null;
-        const lastWeekBarHeight = lastWeekBar ? lastWeekBar.height : 0;
-        const tallestHeight = Math.max(defaultBarHeight, secondBarHeight, lastWeekBarHeight);
-        
-        // Position 4px above the tallest bar top
-        const tallestBarTopPixels = ((bottomY - tallestHeight) / 139) * 100;
-        
+        if (!isActive) return null;
+
+        // Reference: April 20 original bar = 78 value at 128 height
+        const refValue = 78;
+        const refHeight = 128;
+
+        // Default bar label position and value
+        const defaultValue = Math.round(bar.height * refValue / refHeight);
+        const defaultBarCenterX = getBarX(bar.centerX, defaultBarSlotIndex) + individualBarWidth / 2;
+        const defaultBarTop = bottomY - bar.height;
+        const defaultLeftPercent = (defaultBarCenterX / 326) * 100;
+
+        // Overlay bar label position and value
+        let overlayValue: number | null = null;
+        let overlayLeftPercent: number | null = null;
+        let overlayBarTop: number | null = null;
+
+        if (showSecondBarGraph && secondBarGraphHeights) {
+          const overlayBar = secondBarGraphHeights.find(b => b.date === bar.date);
+          if (overlayBar) {
+            overlayValue = Math.round(overlayBar.height * refValue / refHeight);
+            const overlayCenterX = getBarX(overlayBar.centerX, secondBarSlotIndex) + individualBarWidth / 2;
+            overlayLeftPercent = (overlayCenterX / 326) * 100;
+            overlayBarTop = bottomY - overlayBar.height;
+          }
+        } else if (showLastWeek && lastWeekBarGraphHeights) {
+          const overlayBar = lastWeekBarGraphHeights.find(b => b.date === bar.date);
+          if (overlayBar) {
+            overlayValue = Math.round(overlayBar.height * refValue / refHeight);
+            const overlayCenterX = getBarX(overlayBar.centerX, lastWeekSlotIndex) + individualBarWidth / 2;
+            overlayLeftPercent = (overlayCenterX / 326) * 100;
+            overlayBarTop = bottomY - overlayBar.height;
+          }
+        }
+
         return (
-          <div
-            key={`label-second-${bar.date}`}
-            className="absolute font-['Mona_Sans',_sans-serif]"
-            style={{
-              left: `${bar.leftPercent}%`,
-              top: `calc(${tallestBarTopPixels}% - 4px)`,
-              transform: 'translate(-50%, -100%)',
-              fontSize: '18px',
-              fontWeight: 700,
-              color: '#ffffff',
-              pointerEvents: 'none',
-            }}
-          >
-            {secondValue}
+          <div key={`sidebyside-labels-${bar.date}`}>
+            {/* Default bar value */}
+            <div
+              className="absolute font-['Mona_Sans',_sans-serif]"
+              style={{
+                left: `${defaultLeftPercent}%`,
+                top: `${defaultBarTop - 4}px`,
+                transform: 'translate(-50%, -100%)',
+                fontSize: '13px',
+                fontWeight: 500,
+                letterSpacing: '-0.25px',
+                color: '#ffffff',
+                pointerEvents: 'none',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {defaultValue}
+            </div>
+            {/* Overlay bar value */}
+            {overlayValue !== null && overlayLeftPercent !== null && overlayBarTop !== null && (
+              <div
+                className="absolute font-['Mona_Sans',_sans-serif]"
+                style={{
+                  left: `${overlayLeftPercent}%`,
+                  top: `${overlayBarTop - 4}px`,
+                  transform: 'translate(-50%, -100%)',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  letterSpacing: '-0.25px',
+                  color: '#ffffff',
+                  pointerEvents: 'none',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {overlayValue}
+              </div>
+            )}
           </div>
         );
       })}
@@ -1299,13 +1447,14 @@ export default function App() {
   };
 
   // Default bar graph values for chart 2 (used in BPM display)
+  // Calculated proportionally: Math.round(height * 78 / 128)
   const defaultBarGraphValues2: { [key: string]: number } = {
-    '14': 62,  // height 103 - lowest
-    '15': 72,  // height 123
-    '16': 80,  // height 133
-    '17': 68,  // height 113
-    '18': 85,  // height 137 - highest
-    '19': 70,  // height 118
+    '14': 63,  // height 103
+    '15': 75,  // height 123
+    '16': 81,  // height 133
+    '17': 69,  // height 113
+    '18': 83,  // height 137
+    '19': 72,  // height 118
     '20': 78,  // height 128
   };
 
@@ -1605,7 +1754,7 @@ export default function App() {
         setShouldAnimateLastWeek2(true);
         setTimeout(() => {
           setShouldAnimateLastWeek2(false);
-        }, 440);
+        }, 700); // 250ms shrink delay + 440ms grow animation
       } else {
         setToggleStates2(prev => ({ ...prev, lastWeek: false, sleep: true }));
         setShowLegend2(false); // Hide legend when only sleep is on
@@ -1625,7 +1774,7 @@ export default function App() {
         setShouldAnimateSecondBarGraph2(true);
         setTimeout(() => {
           setShouldAnimateSecondBarGraph2(false);
-        }, 440);
+        }, 700); // 250ms shrink delay + 440ms grow animation
       } else {
         setToggleStates2(prev => ({ ...prev, secondBarGraph: false, sleep: true }));
         setShowLegend2(false); // Hide legend when only sleep is on
@@ -1812,7 +1961,7 @@ export default function App() {
                   <span className="font-['Mona_Sans',_sans-serif] text-[#ffffff]" style={{ fontSize: '14px' }}>Line Graph</span>
                 </div>
                 <div className="flex items-center gap-2" style={{ marginTop: '-4px' }}>
-                  <div className="rounded-full" style={{ width: '13px', height: '13px', backgroundColor: '#3D6E8A' }} />
+                  <div className="rounded-full" style={{ width: '13px', height: '13px', backgroundColor: '#56A7C7' }} />
                   <span className="font-['Mona_Sans',_sans-serif] text-[#ffffff]" style={{ fontSize: '14px' }}>Bar Graph</span>
                 </div>
               </div>
@@ -2011,12 +2160,12 @@ export default function App() {
                 }}
               >
                 <div className="flex items-center gap-2">
-                  <div className="rounded-full" style={{ width: '13px', height: '13px', backgroundColor: '#3D6E8A' }} />
+                  <div className="rounded-full" style={{ width: '13px', height: '13px', backgroundColor: '#56A7C7' }} />
                   <span className="font-['Mona_Sans',_sans-serif] text-[#ffffff]" style={{ fontSize: '14px' }}>Bar Graph 1</span>
                 </div>
                 {toggleStates2.secondBarGraph && (
                   <div className="flex items-center gap-2" style={{ marginTop: '-4px' }}>
-                    <div className="rounded-full" style={{ width: '13px', height: '13px', backgroundColor: '#A7DCF1' }} />
+                    <div className="rounded-full" style={{ width: '13px', height: '13px', backgroundColor: '#2E7089' }} />
                     <span className="font-['Mona_Sans',_sans-serif] text-[#ffffff]" style={{ fontSize: '14px' }}>Bar Graph 2</span>
                   </div>
                 )}
@@ -2028,7 +2177,6 @@ export default function App() {
           <div className="relative h-[139px] w-full mb-1">
             {toggleStates2.sleep && (
               <SleepFill
-                key={`sleepfill-2-${toggleStates2.secondBarGraph}-${toggleStates2.lastWeek}-${shouldAnimateSecondBarGraph2}-${shouldAnimateLastWeek2}`}
                 activeDate={hoveredDate2 || fixedDate2}
                 animate={false}
                 animateSecondBarGraph={shouldAnimateSecondBarGraph2}
@@ -2043,6 +2191,7 @@ export default function App() {
                 showLastWeek={toggleStates2.lastWeek}
                 lastWeekBarGraphValues={lastWeekBarGraphValues2}
                 lastWeekBarGraphHeights={lastWeekBarGraphHeights2}
+                sideBySide={true}
               />
             )}
 
