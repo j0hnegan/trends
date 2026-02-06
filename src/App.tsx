@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import svgPaths from "./imports/svg-bbkk6a277";
 import svgPathsLastWeek from "./imports/svg-2xoyo2mn13";
 import svgPathsSleep from "./imports/svg-ixldz9axe4";
@@ -535,7 +535,7 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
   const prevTargetRef = useRef(totalSlotWidth);
   const prevBarGroupCountRef = useRef(barGroupCount);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const target = sideBySide ? individualBarWidth : totalSlotWidth;
     const groupIncreased = sideBySide && barGroupCount > prevBarGroupCountRef.current;
     prevBarGroupCountRef.current = barGroupCount;
@@ -841,7 +841,7 @@ function SleepFill({ activeDate, animate, animateSecondBarGraph = false, animate
         </div>
       )}
       {/* Side-by-side bar labels - show values above each bar when overlay is toggled on and date is hovered */}
-      {sideBySide && (showSecondBarGraph || showLastWeek) && !deferOverlays && barPositions.map((bar) => {
+      {sideBySide && (showSecondBarGraph || showLastWeek) && !deferOverlays && overlayGrowProgress >= 1 && barPositions.map((bar) => {
         const isActive = bar.date === activeDate;
         if (!isActive) return null;
 
